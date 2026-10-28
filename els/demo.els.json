@@ -1,0 +1,1643 @@
+{
+  "format": "els",
+  "version": 1,
+  "geometry": {
+    "version": 1,
+    "cell": 20
+  },
+  "nodes": [
+    {
+      "id": "demo-title",
+      "label": "INFRASTRUCTURĂ DEMONSTRATIVĂ\nArhitectură demonstrativă. Toate datele sunt fictive.",
+      "x": 80,
+      "y": 20,
+      "manualW": 2000,
+      "manualH": 100,
+      "grid": true,
+      "kind": "node",
+      "labelWrap": "manual",
+      "fill": "transparent",
+      "stroke": "transparent",
+      "textColor": "#000000",
+      "borderStyle": "none",
+      "overviewLabel": "INFRASTRUCTURĂ DEMONSTRATIVĂ · EXEMPLU"
+    },
+    {
+      "id": "readers",
+      "label": "Cititori\nAcces public",
+      "x": 160,
+      "y": 200,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "node",
+      "labelWrap": "auto",
+      "fill": "#ECF1F9",
+      "stroke": "#4472C4",
+      "textColor": "#000000",
+      "ports": {
+        "E": 1
+      },
+      "portSlots": {
+        "E1": 3
+      },
+      "overviewLabel": "Cititori"
+    },
+    {
+      "id": "gateway",
+      "label": "Gateway public\nFiltrare HTTPS",
+      "x": 480,
+      "y": 200,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "firewall",
+      "labelWrap": "auto",
+      "fill": "#ECF1F9",
+      "stroke": "#4472C4",
+      "textColor": "#000000",
+      "ports": {
+        "N": 1,
+        "W": 1,
+        "E": 1,
+        "S": 1
+      },
+      "portSlots": {
+        "N1": 6,
+        "W1": 3,
+        "E1": 3,
+        "S1": 6
+      },
+      "overviewLabel": "Gateway public"
+    },
+    {
+      "id": "traffic-guide",
+      "label": "Albastru: acces public\nVerde: servicii · Mov: date\nPortocaliu punctat: rezervă / copie\nGri întrerupt: administrare",
+      "x": 800,
+      "y": 160,
+      "manualW": 380,
+      "manualH": 220,
+      "grid": true,
+      "kind": "node",
+      "labelWrap": "manual",
+      "fill": "transparent",
+      "stroke": "transparent",
+      "textColor": "#000000",
+      "borderStyle": "none",
+      "overviewLabel": "Albastru: acces public"
+    },
+    {
+      "id": "operations",
+      "label": "ADMINISTRARE ȘI SUPRAVEGHERE",
+      "x": 1280,
+      "y": 120,
+      "manualW": 800,
+      "manualH": 280,
+      "grid": true,
+      "kind": "container",
+      "labelWrap": "auto",
+      "fill": "#F3F5F7",
+      "stroke": "#44546A",
+      "textColor": "#000000",
+      "overviewLabel": "ADMINISTRARE ȘI SUPRAVEGHERE"
+    },
+    {
+      "id": "operator",
+      "label": "Post administrare",
+      "x": 1320,
+      "y": 180,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "node",
+      "labelWrap": "auto",
+      "fill": "#EBEEF2",
+      "stroke": "#44546A",
+      "textColor": "#000000",
+      "parent": "operations",
+      "ports": {
+        "S": 1
+      },
+      "portSlots": {
+        "S1": 6
+      },
+      "overviewLabel": "Post administrare"
+    },
+    {
+      "id": "monitor",
+      "label": "Supraveghere\nMetrici și alerte",
+      "x": 1760,
+      "y": 180,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "vm",
+      "labelWrap": "auto",
+      "fill": "#EBEEF2",
+      "stroke": "#44546A",
+      "textColor": "#000000",
+      "parent": "operations",
+      "ports": {
+        "S": 1
+      },
+      "portSlots": {
+        "S1": 6
+      },
+      "overviewLabel": "Supraveghere"
+    },
+    {
+      "id": "admin-network",
+      "label": "Grup porturi: administrare · N1-N2 / S1-S2",
+      "x": 1320,
+      "y": 340,
+      "manualW": 680,
+      "manualH": 40,
+      "grid": true,
+      "kind": "network-segment",
+      "labelWrap": "auto",
+      "fill": "#D6DCE5",
+      "stroke": "#44546A",
+      "textColor": "#000000",
+      "parent": "operations",
+      "ports": {
+        "N": 2,
+        "S": 2
+      },
+      "portSlots": {
+        "N1": 6,
+        "N2": 28,
+        "S1": 4,
+        "S2": 32
+      },
+      "overviewLabel": "Grup porturi: administrare · N1-N2 / S1-S2"
+    },
+    {
+      "id": "production",
+      "label": "PRODUCȚIE · flux principal de sus în jos",
+      "x": 80,
+      "y": 440,
+      "manualW": 1040,
+      "manualH": 1120,
+      "grid": true,
+      "kind": "container",
+      "labelWrap": "auto",
+      "fill": "#F4F7FB",
+      "stroke": "#4472C4",
+      "textColor": "#000000",
+      "overviewLabel": "PRODUCȚIE"
+    },
+    {
+      "id": "presentation",
+      "label": "1. PREZENTARE · trei instanțe sincronizate",
+      "x": 120,
+      "y": 500,
+      "manualW": 960,
+      "manualH": 280,
+      "grid": true,
+      "kind": "container",
+      "labelWrap": "auto",
+      "fill": "#F4F7FB",
+      "stroke": "#4472C4",
+      "textColor": "#000000",
+      "parent": "production",
+      "overviewLabel": "1. PREZENTARE"
+    },
+    {
+      "id": "public-network",
+      "label": "Acces aplicație · N1 intrare / S1-S3 instanțe",
+      "x": 160,
+      "y": 560,
+      "manualW": 880,
+      "manualH": 40,
+      "grid": true,
+      "kind": "network-segment",
+      "labelWrap": "auto",
+      "fill": "#DAE3F3",
+      "stroke": "#4472C4",
+      "textColor": "#000000",
+      "parent": "presentation",
+      "ports": {
+        "N": 1,
+        "S": 3
+      },
+      "portSlots": {
+        "N1": 22,
+        "S1": 6,
+        "S2": 22,
+        "S3": 38
+      },
+      "overviewLabel": "Acces aplicație · N1 intrare / S1-S3 instanțe"
+    },
+    {
+      "id": "catalog-001",
+      "label": "catalog-001",
+      "x": 160,
+      "y": 640,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "vm",
+      "labelWrap": "auto",
+      "fill": "#ECF1F9",
+      "stroke": "#4472C4",
+      "textColor": "#000000",
+      "parent": "presentation",
+      "ports": {
+        "N": 1,
+        "S": 1
+      },
+      "portSlots": {
+        "N1": 6,
+        "S1": 6
+      },
+      "sync": {
+        "id": "demo-web-series",
+        "number": 1,
+        "settings": {
+          "name": "Instanțe catalog",
+          "mode": "numbered",
+          "prefix": "catalog-",
+          "suffix": "",
+          "start": 1,
+          "digits": 3,
+          "properties": [
+            "label",
+            "fill",
+            "stroke",
+            "manualW",
+            "manualH"
+          ]
+        }
+      },
+      "overviewLabel": "catalog-001"
+    },
+    {
+      "id": "catalog-002",
+      "label": "catalog-002",
+      "x": 480,
+      "y": 640,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "vm",
+      "labelWrap": "auto",
+      "fill": "#ECF1F9",
+      "stroke": "#4472C4",
+      "textColor": "#000000",
+      "parent": "presentation",
+      "ports": {
+        "N": 1,
+        "S": 1
+      },
+      "portSlots": {
+        "N1": 6,
+        "S1": 6
+      },
+      "sync": {
+        "id": "demo-web-series",
+        "number": 2,
+        "settings": {
+          "name": "Instanțe catalog",
+          "mode": "numbered",
+          "prefix": "catalog-",
+          "suffix": "",
+          "start": 1,
+          "digits": 3,
+          "properties": [
+            "label",
+            "fill",
+            "stroke",
+            "manualW",
+            "manualH"
+          ]
+        }
+      },
+      "overviewLabel": "catalog-002"
+    },
+    {
+      "id": "catalog-003",
+      "label": "catalog-003",
+      "x": 800,
+      "y": 640,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "vm",
+      "labelWrap": "auto",
+      "fill": "#ECF1F9",
+      "stroke": "#4472C4",
+      "textColor": "#000000",
+      "parent": "presentation",
+      "ports": {
+        "N": 1,
+        "S": 1
+      },
+      "portSlots": {
+        "N1": 6,
+        "S1": 6
+      },
+      "sync": {
+        "id": "demo-web-series",
+        "number": 3,
+        "settings": {
+          "name": "Instanțe catalog",
+          "mode": "numbered",
+          "prefix": "catalog-",
+          "suffix": "",
+          "start": 1,
+          "digits": 3,
+          "properties": [
+            "label",
+            "fill",
+            "stroke",
+            "manualW",
+            "manualH"
+          ]
+        }
+      },
+      "overviewLabel": "catalog-003"
+    },
+    {
+      "id": "processing",
+      "label": "2. PROCESARE · rețea separată de accesul public",
+      "x": 120,
+      "y": 840,
+      "manualW": 960,
+      "manualH": 280,
+      "grid": true,
+      "kind": "container",
+      "labelWrap": "auto",
+      "fill": "#F6FAF4",
+      "stroke": "#70AD47",
+      "textColor": "#000000",
+      "parent": "production",
+      "overviewLabel": "2. PROCESARE"
+    },
+    {
+      "id": "service-network",
+      "label": "Servicii · N1-N3 clienți / S1-S3 procesare",
+      "x": 160,
+      "y": 900,
+      "manualW": 880,
+      "manualH": 40,
+      "grid": true,
+      "kind": "network-segment",
+      "labelWrap": "auto",
+      "fill": "#E2F0D9",
+      "stroke": "#70AD47",
+      "textColor": "#000000",
+      "parent": "processing",
+      "ports": {
+        "N": 3,
+        "S": 3
+      },
+      "portSlots": {
+        "N1": 6,
+        "N2": 22,
+        "N3": 38,
+        "S1": 6,
+        "S2": 22,
+        "S3": 38
+      },
+      "overviewLabel": "Servicii · N1-N3 clienți / S1-S3 procesare"
+    },
+    {
+      "id": "worker-001",
+      "label": "worker-001",
+      "x": 160,
+      "y": 980,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "vm",
+      "labelWrap": "auto",
+      "fill": "#F1F7EC",
+      "stroke": "#70AD47",
+      "textColor": "#000000",
+      "parent": "processing",
+      "ports": {
+        "N": 1,
+        "S": 1
+      },
+      "portSlots": {
+        "N1": 6,
+        "S1": 6
+      },
+      "sync": {
+        "id": "demo-worker-series",
+        "number": 1,
+        "settings": {
+          "name": "Procesare cereri",
+          "mode": "numbered",
+          "prefix": "worker-",
+          "suffix": "",
+          "start": 1,
+          "digits": 3,
+          "properties": [
+            "label",
+            "fill",
+            "stroke",
+            "manualW",
+            "manualH"
+          ]
+        }
+      },
+      "overviewLabel": "worker-001"
+    },
+    {
+      "id": "worker-002",
+      "label": "worker-002",
+      "x": 480,
+      "y": 980,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "vm",
+      "labelWrap": "auto",
+      "fill": "#F1F7EC",
+      "stroke": "#70AD47",
+      "textColor": "#000000",
+      "parent": "processing",
+      "ports": {
+        "N": 1,
+        "S": 1
+      },
+      "portSlots": {
+        "N1": 6,
+        "S1": 6
+      },
+      "sync": {
+        "id": "demo-worker-series",
+        "number": 2,
+        "settings": {
+          "name": "Procesare cereri",
+          "mode": "numbered",
+          "prefix": "worker-",
+          "suffix": "",
+          "start": 1,
+          "digits": 3,
+          "properties": [
+            "label",
+            "fill",
+            "stroke",
+            "manualW",
+            "manualH"
+          ]
+        }
+      },
+      "overviewLabel": "worker-002"
+    },
+    {
+      "id": "worker-003",
+      "label": "worker-003",
+      "x": 800,
+      "y": 980,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "vm",
+      "labelWrap": "auto",
+      "fill": "#F1F7EC",
+      "stroke": "#70AD47",
+      "textColor": "#000000",
+      "parent": "processing",
+      "ports": {
+        "N": 1,
+        "S": 1
+      },
+      "portSlots": {
+        "N1": 6,
+        "S1": 6
+      },
+      "sync": {
+        "id": "demo-worker-series",
+        "number": 3,
+        "settings": {
+          "name": "Procesare cereri",
+          "mode": "numbered",
+          "prefix": "worker-",
+          "suffix": "",
+          "start": 1,
+          "digits": 3,
+          "properties": [
+            "label",
+            "fill",
+            "stroke",
+            "manualW",
+            "manualH"
+          ]
+        }
+      },
+      "overviewLabel": "worker-003"
+    },
+    {
+      "id": "data",
+      "label": "3. DATE · stocare, jurnal și arhivare",
+      "x": 120,
+      "y": 1180,
+      "manualW": 960,
+      "manualH": 340,
+      "grid": true,
+      "kind": "container",
+      "labelWrap": "auto",
+      "fill": "#F7F1FB",
+      "stroke": "#7030A0",
+      "textColor": "#000000",
+      "parent": "production",
+      "overviewLabel": "3. DATE"
+    },
+    {
+      "id": "data-network",
+      "label": "Date · N1-N3 aplicații / S1-S3 servicii",
+      "x": 160,
+      "y": 1240,
+      "manualW": 880,
+      "manualH": 40,
+      "grid": true,
+      "kind": "network-segment",
+      "labelWrap": "auto",
+      "fill": "#E3D1F1",
+      "stroke": "#7030A0",
+      "textColor": "#000000",
+      "parent": "data",
+      "ports": {
+        "N": 3,
+        "S": 3
+      },
+      "portSlots": {
+        "N1": 6,
+        "N2": 22,
+        "N3": 38,
+        "S1": 6,
+        "S2": 22,
+        "S3": 38
+      },
+      "overviewLabel": "Date · N1-N3 aplicații / S1-S3 servicii"
+    },
+    {
+      "id": "database",
+      "label": "Catalog persistent\nBază de date principală",
+      "x": 160,
+      "y": 1340,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "vm",
+      "labelWrap": "auto",
+      "fill": "#F1E8F8",
+      "stroke": "#7030A0",
+      "textColor": "#000000",
+      "parent": "data",
+      "ports": {
+        "N": 1,
+        "E": 1
+      },
+      "portSlots": {
+        "N1": 6,
+        "E1": 3
+      },
+      "overviewLabel": "Catalog persistent"
+    },
+    {
+      "id": "journal",
+      "label": "Jurnal tranzacții\nCoada de evenimente",
+      "x": 480,
+      "y": 1340,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "vm",
+      "labelWrap": "auto",
+      "fill": "#F1E8F8",
+      "stroke": "#7030A0",
+      "textColor": "#000000",
+      "parent": "data",
+      "ports": {
+        "N": 1,
+        "E": 1
+      },
+      "portSlots": {
+        "N1": 6,
+        "E1": 3
+      },
+      "overviewLabel": "Jurnal tranzacții"
+    },
+    {
+      "id": "documents",
+      "label": "Depozit documente\nObiecte și versiuni",
+      "x": 800,
+      "y": 1340,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "node",
+      "labelWrap": "auto",
+      "fill": "#F1E8F8",
+      "stroke": "#7030A0",
+      "textColor": "#000000",
+      "parent": "data",
+      "ports": {
+        "N": 1,
+        "E": 1
+      },
+      "portSlots": {
+        "N1": 6,
+        "E1": 3
+      },
+      "overviewLabel": "Depozit documente"
+    },
+    {
+      "id": "recovery",
+      "label": "CONTINUITATE · servicii de rezervă și copii",
+      "x": 1280,
+      "y": 440,
+      "manualW": 800,
+      "manualH": 1120,
+      "grid": true,
+      "kind": "container",
+      "labelWrap": "auto",
+      "fill": "#FEF7F3",
+      "stroke": "#ED7D31",
+      "textColor": "#000000",
+      "overviewLabel": "CONTINUITATE"
+    },
+    {
+      "id": "reserve-gateway",
+      "label": "Gateway de rezervă\nActivare la incident",
+      "x": 1520,
+      "y": 500,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "firewall",
+      "labelWrap": "auto",
+      "fill": "#FDF2EA",
+      "stroke": "#ED7D31",
+      "textColor": "#000000",
+      "parent": "recovery",
+      "ports": {
+        "W": 1,
+        "E": 1,
+        "S": 1
+      },
+      "portSlots": {
+        "W1": 3,
+        "E1": 3,
+        "S1": 6
+      },
+      "overviewLabel": "Gateway de rezervă"
+    },
+    {
+      "id": "recovery-network",
+      "label": "Rezervă · N1 acces / S1-S2 servicii",
+      "x": 1320,
+      "y": 720,
+      "manualW": 680,
+      "manualH": 40,
+      "grid": true,
+      "kind": "network-segment",
+      "labelWrap": "auto",
+      "fill": "#FBE5D6",
+      "stroke": "#ED7D31",
+      "textColor": "#000000",
+      "parent": "recovery",
+      "ports": {
+        "N": 1,
+        "S": 2
+      },
+      "portSlots": {
+        "N1": 16,
+        "S1": 6,
+        "S2": 28
+      },
+      "overviewLabel": "Rezervă · N1 acces / S1-S2 servicii"
+    },
+    {
+      "id": "reserve-catalog",
+      "label": "Catalog de rezervă",
+      "x": 1320,
+      "y": 820,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "vm",
+      "labelWrap": "auto",
+      "fill": "#FDF2EA",
+      "stroke": "#ED7D31",
+      "textColor": "#000000",
+      "parent": "recovery",
+      "ports": {
+        "N": 1,
+        "S": 1
+      },
+      "portSlots": {
+        "N1": 6,
+        "S1": 6
+      },
+      "overviewLabel": "Catalog de rezervă"
+    },
+    {
+      "id": "restore-worker",
+      "label": "Restaurare\nVerificarea copiilor",
+      "x": 1760,
+      "y": 820,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "vm",
+      "labelWrap": "auto",
+      "fill": "#FDF2EA",
+      "stroke": "#ED7D31",
+      "textColor": "#000000",
+      "parent": "recovery",
+      "ports": {
+        "N": 1,
+        "S": 1
+      },
+      "portSlots": {
+        "N1": 6,
+        "S1": 6
+      },
+      "overviewLabel": "Restaurare"
+    },
+    {
+      "id": "copy-network",
+      "label": "Copii și replicare · porturi N1-N2 / S1-S2",
+      "x": 1320,
+      "y": 1060,
+      "manualW": 680,
+      "manualH": 40,
+      "grid": true,
+      "kind": "network-segment",
+      "labelWrap": "auto",
+      "fill": "#FBE5D6",
+      "stroke": "#ED7D31",
+      "textColor": "#000000",
+      "parent": "recovery",
+      "ports": {
+        "N": 2,
+        "S": 2
+      },
+      "portSlots": {
+        "N1": 6,
+        "N2": 28,
+        "S1": 6,
+        "S2": 28
+      },
+      "overviewLabel": "Copii și replicare · porturi N1-N2 / S1-S2"
+    },
+    {
+      "id": "replica",
+      "label": "Bază de date\nReplică verificată",
+      "x": 1320,
+      "y": 1200,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "vm",
+      "labelWrap": "auto",
+      "fill": "#FDF2EA",
+      "stroke": "#ED7D31",
+      "textColor": "#000000",
+      "parent": "recovery",
+      "ports": {
+        "N": 1,
+        "W": 1,
+        "S": 1
+      },
+      "portSlots": {
+        "N1": 6,
+        "W1": 3,
+        "S1": 6
+      },
+      "overviewLabel": "Bază de date"
+    },
+    {
+      "id": "archive",
+      "label": "Arhivă copii\nPăstrare 30 de zile",
+      "x": 1760,
+      "y": 1200,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "node",
+      "labelWrap": "auto",
+      "fill": "#FDF2EA",
+      "stroke": "#ED7D31",
+      "textColor": "#000000",
+      "parent": "recovery",
+      "ports": {
+        "N": 1,
+        "W": 1,
+        "S": 1
+      },
+      "portSlots": {
+        "N1": 6,
+        "W1": 3,
+        "S1": 6
+      },
+      "overviewLabel": "Arhivă copii"
+    },
+    {
+      "id": "reserve-note",
+      "label": "Legăturile punctate rămân vizibile la imprimare.\nClic pe o linie: capete și toate coturile editabile.",
+      "x": 1320,
+      "y": 1400,
+      "manualW": 680,
+      "manualH": 100,
+      "grid": true,
+      "kind": "node",
+      "labelWrap": "manual",
+      "fill": "transparent",
+      "stroke": "transparent",
+      "textColor": "#000000",
+      "borderStyle": "none",
+      "parent": "recovery",
+      "overviewLabel": "Legăturile punctate rămân vizibile la imprimare."
+    },
+    {
+      "id": "workshop",
+      "label": "ATELIER · exerciții independente de rețea",
+      "x": 2240,
+      "y": 120,
+      "manualW": 760,
+      "manualH": 1440,
+      "grid": true,
+      "kind": "container",
+      "labelWrap": "auto",
+      "fill": "#F3F5F7",
+      "stroke": "#44546A",
+      "textColor": "#000000",
+      "overviewLabel": "ATELIER"
+    },
+    {
+      "id": "try-sync",
+      "label": "1. Selectează un nod catalog-001 sau worker-001.\nMembrii seriei se evidențiază împreună.\nSchimbă numele, culoarea ori dimensiunea.\nAnulează cu Ctrl+Z; apoi refă cu Ctrl+Y.",
+      "x": 2280,
+      "y": 180,
+      "manualW": 680,
+      "manualH": 200,
+      "grid": true,
+      "kind": "node",
+      "labelWrap": "manual",
+      "fill": "transparent",
+      "stroke": "transparent",
+      "textColor": "#000000",
+      "borderStyle": "none",
+      "parent": "workshop",
+      "overviewLabel": "1. Selectează un nod catalog-001 sau worker-001."
+    },
+    {
+      "id": "named-access-a",
+      "label": "Acces atelier",
+      "x": 2320,
+      "y": 420,
+      "manualW": 560,
+      "manualH": 40,
+      "grid": true,
+      "kind": "network-segment",
+      "labelWrap": "auto",
+      "fill": "#E2F0D9",
+      "stroke": "#70AD47",
+      "textColor": "#000000",
+      "parent": "workshop",
+      "ports": {
+        "N": 1,
+        "S": 2
+      },
+      "portSlots": {
+        "N1": 6,
+        "S1": 6,
+        "S2": 14
+      },
+      "sync": {
+        "id": "demo-common-name",
+        "number": 1,
+        "settings": {
+          "name": "Segmente cu nume comun",
+          "mode": "same",
+          "prefix": "",
+          "suffix": "",
+          "start": 1,
+          "digits": 3,
+          "properties": [
+            "label",
+            "fill",
+            "stroke",
+            "manualW",
+            "manualH"
+          ]
+        }
+      },
+      "overviewLabel": "Acces atelier"
+    },
+    {
+      "id": "named-access-b",
+      "label": "Acces atelier",
+      "x": 2320,
+      "y": 540,
+      "manualW": 560,
+      "manualH": 40,
+      "grid": true,
+      "kind": "network-segment",
+      "labelWrap": "auto",
+      "fill": "#E2F0D9",
+      "stroke": "#70AD47",
+      "textColor": "#000000",
+      "parent": "workshop",
+      "ports": {
+        "N": 1,
+        "S": 2
+      },
+      "portSlots": {
+        "N1": 6,
+        "S1": 6,
+        "S2": 14
+      },
+      "sync": {
+        "id": "demo-common-name",
+        "number": 2,
+        "settings": {
+          "name": "Segmente cu nume comun",
+          "mode": "same",
+          "prefix": "",
+          "suffix": "",
+          "start": 1,
+          "digits": 3,
+          "properties": [
+            "label",
+            "fill",
+            "stroke",
+            "manualW",
+            "manualH"
+          ]
+        }
+      },
+      "overviewLabel": "Acces atelier"
+    },
+    {
+      "id": "try-routes",
+      "label": "2. Selectează linia de mai jos.\nAdaugă punct din panou, mută textul\ncu mânerul și schimbă săgețile.\nCapătul liber poate fi reconectat la un port.",
+      "x": 2280,
+      "y": 680,
+      "manualW": 680,
+      "manualH": 180,
+      "grid": true,
+      "kind": "node",
+      "labelWrap": "manual",
+      "fill": "transparent",
+      "stroke": "transparent",
+      "textColor": "#000000",
+      "borderStyle": "none",
+      "parent": "workshop",
+      "overviewLabel": "2. Selectează linia de mai jos."
+    },
+    {
+      "id": "workshop-node",
+      "label": "Nod de exercițiu\nPorturi pe toate laturile",
+      "x": 2320,
+      "y": 900,
+      "manualW": 240,
+      "manualH": 120,
+      "grid": true,
+      "kind": "node",
+      "labelWrap": "auto",
+      "fill": "#ECF1F9",
+      "stroke": "#4472C4",
+      "textColor": "#000000",
+      "parent": "workshop",
+      "ports": {
+        "N": 2,
+        "E": 2,
+        "S": 2,
+        "W": 2
+      },
+      "portSlots": {
+        "N1": 5,
+        "N2": 7,
+        "E1": 2,
+        "E2": 4,
+        "S1": 5,
+        "S2": 7,
+        "W1": 2,
+        "W2": 4
+      },
+      "overviewLabel": "Nod de exercițiu"
+    },
+    {
+      "id": "try-view",
+      "label": "3. Shift+clic: selecție multiplă. Ctrl+A: toate.\nMută vederea trăgând peste un nod neselectat.\nÎncearcă alinierea, copierea și lipirea.\nExportă ELS, SVG, PNG, JPG sau Mermaid.",
+      "x": 2280,
+      "y": 1100,
+      "manualW": 680,
+      "manualH": 180,
+      "grid": true,
+      "kind": "node",
+      "labelWrap": "manual",
+      "fill": "transparent",
+      "stroke": "transparent",
+      "textColor": "#000000",
+      "borderStyle": "none",
+      "parent": "workshop",
+      "overviewLabel": "3. Shift+clic: selecție multiplă. Ctrl+A: toate."
+    },
+    {
+      "id": "tilt-left",
+      "label": "Rotire -15°",
+      "x": 2320,
+      "y": 1320,
+      "manualW": 200,
+      "manualH": 80,
+      "grid": true,
+      "kind": "node",
+      "labelWrap": "single",
+      "fill": "transparent",
+      "stroke": "#7030A0",
+      "textColor": "#000000",
+      "parent": "workshop",
+      "rotation": -15,
+      "borderStyle": "dashed",
+      "overviewLabel": "Rotire -15°"
+    },
+    {
+      "id": "tilt-right",
+      "label": "Rotire +15°",
+      "x": 2680,
+      "y": 1320,
+      "manualW": 200,
+      "manualH": 80,
+      "grid": true,
+      "kind": "node",
+      "labelWrap": "auto",
+      "fill": "#F1E8F8",
+      "stroke": "#7030A0",
+      "textColor": "#000000",
+      "parent": "workshop",
+      "rotation": 15,
+      "borderStyle": "dotted",
+      "overviewLabel": "Rotire +15°"
+    },
+    {
+      "id": "offset-label",
+      "label": "Text mutat lângă nod",
+      "x": 2440,
+      "y": 1480,
+      "manualW": 320,
+      "manualH": 40,
+      "grid": true,
+      "kind": "node",
+      "labelWrap": "manual",
+      "fill": "transparent",
+      "stroke": "#44546A",
+      "textColor": "#000000",
+      "borderStyle": "solid",
+      "parent": "workshop",
+      "labelPos": {
+        "x": 0.5,
+        "y": -0.5
+      },
+      "overviewLabel": "Text mutat lângă nod"
+    }
+  ],
+  "edges": [
+    {
+      "id": "public-access",
+      "from": "readers",
+      "fromPort": "E1",
+      "to": "gateway",
+      "toPort": "W1",
+      "color": "#4472C4",
+      "label": "HTTPS",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "end"
+    },
+    {
+      "id": "operator-admin",
+      "from": "operator",
+      "fromPort": "S1",
+      "to": "admin-network",
+      "toPort": "N1",
+      "color": "#44546A",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "dashed",
+      "arrows": "both"
+    },
+    {
+      "id": "monitor-admin",
+      "from": "monitor",
+      "fromPort": "S1",
+      "to": "admin-network",
+      "toPort": "N2",
+      "color": "#44546A",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "dashed",
+      "arrows": "both"
+    },
+    {
+      "id": "web-in-0",
+      "from": "public-network",
+      "fromPort": "S1",
+      "to": "catalog-001",
+      "toPort": "N1",
+      "color": "#4472C4",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "end"
+    },
+    {
+      "id": "web-in-1",
+      "from": "public-network",
+      "fromPort": "S2",
+      "to": "catalog-002",
+      "toPort": "N1",
+      "color": "#4472C4",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "end"
+    },
+    {
+      "id": "web-in-2",
+      "from": "public-network",
+      "fromPort": "S3",
+      "to": "catalog-003",
+      "toPort": "N1",
+      "color": "#4472C4",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "end"
+    },
+    {
+      "id": "gateway-production",
+      "from": "gateway",
+      "fromPort": "S1",
+      "to": "public-network",
+      "toPort": "N1",
+      "color": "#4472C4",
+      "label": "443 / TLS",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "end"
+    },
+    {
+      "id": "web-service-0",
+      "from": "catalog-001",
+      "fromPort": "S1",
+      "to": "service-network",
+      "toPort": "N1",
+      "color": "#70AD47",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "end"
+    },
+    {
+      "id": "worker-in-0",
+      "from": "service-network",
+      "fromPort": "S1",
+      "to": "worker-001",
+      "toPort": "N1",
+      "color": "#70AD47",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "end"
+    },
+    {
+      "id": "web-service-1",
+      "from": "catalog-002",
+      "fromPort": "S1",
+      "to": "service-network",
+      "toPort": "N2",
+      "color": "#70AD47",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "end"
+    },
+    {
+      "id": "worker-in-1",
+      "from": "service-network",
+      "fromPort": "S2",
+      "to": "worker-002",
+      "toPort": "N1",
+      "color": "#70AD47",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "end"
+    },
+    {
+      "id": "web-service-2",
+      "from": "catalog-003",
+      "fromPort": "S1",
+      "to": "service-network",
+      "toPort": "N3",
+      "color": "#70AD47",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "end"
+    },
+    {
+      "id": "worker-in-2",
+      "from": "service-network",
+      "fromPort": "S3",
+      "to": "worker-003",
+      "toPort": "N1",
+      "color": "#70AD47",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "end"
+    },
+    {
+      "id": "worker-data-0",
+      "from": "worker-001",
+      "fromPort": "S1",
+      "to": "data-network",
+      "toPort": "N1",
+      "color": "#7030A0",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "end"
+    },
+    {
+      "id": "data-in-0",
+      "from": "data-network",
+      "fromPort": "S1",
+      "to": "database",
+      "toPort": "N1",
+      "color": "#7030A0",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "end"
+    },
+    {
+      "id": "worker-data-1",
+      "from": "worker-002",
+      "fromPort": "S1",
+      "to": "data-network",
+      "toPort": "N2",
+      "color": "#7030A0",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "end"
+    },
+    {
+      "id": "data-in-1",
+      "from": "data-network",
+      "fromPort": "S2",
+      "to": "journal",
+      "toPort": "N1",
+      "color": "#7030A0",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "end"
+    },
+    {
+      "id": "worker-data-2",
+      "from": "worker-003",
+      "fromPort": "S1",
+      "to": "data-network",
+      "toPort": "N3",
+      "color": "#7030A0",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "end"
+    },
+    {
+      "id": "data-in-2",
+      "from": "data-network",
+      "fromPort": "S3",
+      "to": "documents",
+      "toPort": "N1",
+      "color": "#7030A0",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "end"
+    },
+    {
+      "id": "gateway-failover",
+      "from": "gateway",
+      "fromPort": "E1",
+      "to": "reserve-gateway",
+      "toPort": "W1",
+      "color": "#ED7D31",
+      "label": "Rută de rezervă",
+      "labelColor": "#44546A",
+      "lineStyle": "dotted",
+      "arrows": "end",
+      "waypoints": [
+        {
+          "x": 760,
+          "y": 260
+        },
+        {
+          "x": 760,
+          "y": 420
+        },
+        {
+          "x": 1200,
+          "y": 420
+        },
+        {
+          "x": 1200,
+          "y": 560
+        }
+      ]
+    },
+    {
+      "id": "reserve-in",
+      "from": "reserve-gateway",
+      "fromPort": "S1",
+      "to": "recovery-network",
+      "toPort": "N1",
+      "color": "#ED7D31",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "dotted",
+      "arrows": "end"
+    },
+    {
+      "id": "reserve-web",
+      "from": "recovery-network",
+      "fromPort": "S1",
+      "to": "reserve-catalog",
+      "toPort": "N1",
+      "color": "#ED7D31",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "dotted",
+      "arrows": "end"
+    },
+    {
+      "id": "reserve-restore",
+      "from": "recovery-network",
+      "fromPort": "S2",
+      "to": "restore-worker",
+      "toPort": "N1",
+      "color": "#ED7D31",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "dotted",
+      "arrows": "end"
+    },
+    {
+      "id": "reserve-copy",
+      "from": "reserve-catalog",
+      "fromPort": "S1",
+      "to": "copy-network",
+      "toPort": "N1",
+      "color": "#ED7D31",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "dotted",
+      "arrows": "end"
+    },
+    {
+      "id": "restore-copy",
+      "from": "restore-worker",
+      "fromPort": "S1",
+      "to": "copy-network",
+      "toPort": "N2",
+      "color": "#ED7D31",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "dotted",
+      "arrows": "both"
+    },
+    {
+      "id": "replica-in",
+      "from": "copy-network",
+      "fromPort": "S1",
+      "to": "replica",
+      "toPort": "N1",
+      "color": "#ED7D31",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "dotted",
+      "arrows": "end"
+    },
+    {
+      "id": "archive-in",
+      "from": "copy-network",
+      "fromPort": "S2",
+      "to": "archive",
+      "toPort": "N1",
+      "color": "#ED7D31",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "dotted",
+      "arrows": "end"
+    },
+    {
+      "id": "replication",
+      "from": "database",
+      "fromPort": "E1",
+      "to": "replica",
+      "toPort": "W1",
+      "color": "#7030A0",
+      "label": "Replicare asincronă",
+      "labelColor": "#44546A",
+      "lineStyle": "dashed",
+      "arrows": "end",
+      "waypoints": [
+        {
+          "x": 440,
+          "y": 1400
+        },
+        {
+          "x": 440,
+          "y": 1540
+        },
+        {
+          "x": 1200,
+          "y": 1540
+        },
+        {
+          "x": 1200,
+          "y": 1260
+        }
+      ],
+      "labelAnchor": {
+        "segment": 2,
+        "t": 0.5,
+        "dx": 0,
+        "dy": -20
+      }
+    },
+    {
+      "id": "archive-events",
+      "from": "journal",
+      "fromPort": "E1",
+      "to": "archive",
+      "toPort": "W1",
+      "color": "#ED7D31",
+      "label": "Copie nocturnă",
+      "labelColor": "#44546A",
+      "lineStyle": "dotted",
+      "arrows": "end",
+      "waypoints": [
+        {
+          "x": 760,
+          "y": 1400
+        },
+        {
+          "x": 760,
+          "y": 1600
+        },
+        {
+          "x": 1720,
+          "y": 1600
+        },
+        {
+          "x": 1720,
+          "y": 1260
+        }
+      ]
+    },
+    {
+      "id": "document-snapshot",
+      "from": "documents",
+      "fromPort": "E1",
+      "to": "archive",
+      "toPort": "S1",
+      "color": "#ED7D31",
+      "label": "Versiuni",
+      "labelColor": "#44546A",
+      "lineStyle": "dotted",
+      "arrows": "end",
+      "waypoints": [
+        {
+          "x": 1160,
+          "y": 1400
+        },
+        {
+          "x": 1160,
+          "y": 1640
+        },
+        {
+          "x": 1880,
+          "y": 1640
+        }
+      ]
+    },
+    {
+      "id": "admin-main",
+      "from": "admin-network",
+      "fromPort": "S1",
+      "to": "gateway",
+      "toPort": "N1",
+      "color": "#44546A",
+      "label": "Administrare",
+      "labelColor": "#44546A",
+      "lineStyle": "dashed",
+      "arrows": "both",
+      "waypoints": [
+        {
+          "x": 1400,
+          "y": 420
+        },
+        {
+          "x": 1240,
+          "y": 420
+        },
+        {
+          "x": 1240,
+          "y": 140
+        },
+        {
+          "x": 600,
+          "y": 140
+        }
+      ]
+    },
+    {
+      "id": "admin-reserve",
+      "from": "admin-network",
+      "fromPort": "S2",
+      "to": "reserve-gateway",
+      "toPort": "E1",
+      "color": "#44546A",
+      "label": "",
+      "labelColor": "#44546A",
+      "lineStyle": "dashed",
+      "arrows": "both",
+      "waypoints": [
+        {
+          "x": 1960,
+          "y": 420
+        },
+        {
+          "x": 2120,
+          "y": 420
+        },
+        {
+          "x": 2120,
+          "y": 560
+        }
+      ]
+    },
+    {
+      "id": "no-arrows",
+      "from": "named-access-a",
+      "fromPort": "S1",
+      "to": "named-access-b",
+      "toPort": "N1",
+      "color": "#70AD47",
+      "label": "Fără săgeți",
+      "labelColor": "#44546A",
+      "lineStyle": "solid",
+      "arrows": "none"
+    },
+    {
+      "id": "free-ended",
+      "from": "workshop-node",
+      "fromPort": "E1",
+      "toPoint": {
+        "x": 2920,
+        "y": 1040
+      },
+      "color": "#4472C4",
+      "label": "Capăt liber",
+      "lineStyle": "solid",
+      "arrows": "start",
+      "waypoints": [
+        {
+          "x": 2600,
+          "y": 940
+        },
+        {
+          "x": 2600,
+          "y": 1000
+        },
+        {
+          "x": 2800,
+          "y": 1000
+        },
+        {
+          "x": 2800,
+          "y": 1040
+        }
+      ],
+      "labelAnchor": {
+        "segment": 2,
+        "t": 0.5,
+        "dx": 0,
+        "dy": -20
+      }
+    }
+  ]
+}

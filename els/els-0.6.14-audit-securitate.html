@@ -1,0 +1,971 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+  <title>Audit securitate ELS 0.6.14</title>
+  <style>
+    /* Structură și tipografie: cuvintele din textul curent se împart numai la spații. */
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #202b3a; background: #fff; font: 16px/1.65 system-ui, sans-serif; word-break: normal; overflow-wrap: normal; hyphens: none; }
+    main { max-width: 1200px; margin: 40px auto 72px; padding: 0 28px; }
+    h1, h2, h3 { color: #17253a; line-height: 1.3; }
+    h1 { margin: 8px 0 12px; font-size: 2rem; }
+    h2 { margin: 40px 0 16px; padding-bottom: 10px; border-bottom: 1px solid #dce3eb; font-size: 1.35rem; }
+    h3 { margin: 24px 0 12px; font-size: 1.08rem; }
+    p { margin: 10px 0 16px; }
+    li { margin: 6px 0; }
+    a { color: #245994; }
+    .meta { color: #526174; font-size: .93rem; }
+    .summary { margin: 24px 0; padding: 16px 20px; border: 1px solid #cbd9e9; border-left: 4px solid #426991; background: #f4f7fb; }
+    .summary strong { display: block; margin-bottom: 4px; }
+    code, pre { font: .88em/1.55 ui-monospace, Consolas, monospace; }
+    code { color: #243f60; }
+    .identity { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 12px 20px; }
+    .identity dt { font-weight: 600; }
+    .identity dd { margin: 0; min-width: 0; }
+    .fingerprint { overflow-wrap: anywhere; } /* Unele hash-uri nu au separatori. */
+    /* Tabele: coloane rezervate, fără comprimare până la o literă pe rând. */
+    .table-scroll { width: 100%; overflow-x: auto; margin: 18px 0; border: 1px solid #d3dce7; border-radius: 6px; }
+    table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+    caption { padding: 12px 16px; text-align: left; font-weight: 600; background: #f5f7fa; }
+    th, td { padding: 14px 16px; border-bottom: 1px solid #dce3eb; text-align: left; vertical-align: top; font-weight: 400; word-break: normal; overflow-wrap: normal; }
+    thead th { background: #edf2f7; font-weight: 600; }
+    tbody tr:last-child > * { border-bottom: 0; }
+    tbody tr:nth-child(even) { background: #fafbfd; }
+    th[scope="row"] { font-weight: 600; }
+    .controls { min-width: 860px; }
+    .controls col:first-child { width: 300px; }
+    .results { min-width: 860px; }
+    .results col:first-child { width: 180px; }
+    .results col:nth-child(2) { width: 100px; }
+    .case-id, .status, .source-ref code { white-space: nowrap; }
+    .source-ref { display: block; margin-top: 10px; font-weight: 400; }
+    .source-ref small { display: block; color: #607086; font-size: .8rem; }
+    .status { display: inline-block; font-size: .88rem; font-weight: 600; }
+    .pass { color: #28603b; }
+    .fail { color: #a02c2c; }
+    /* Dovezile lungi sunt separate de textul explicativ și derulează în propriul panou. */
+    details { margin: 12px 0; }
+    summary { color: #345c86; cursor: pointer; padding: 4px 0; }
+    pre { padding: 14px; margin: 10px 0; background: #f3f5f8; border: 1px solid #dce3eb; border-radius: 4px; white-space: pre; overflow: auto; max-width: 100%; max-height: 520px; }
+    .case-evidence { font-size: .93rem; }
+    .table-note { color: #526174; font-size: .9rem; }
+    @media (max-width: 680px) {
+      main { margin: 24px auto 40px; padding: 0 16px; }
+      h1 { font-size: 1.6rem; }
+      .identity { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+      .identity dd { margin-bottom: 12px; }
+    }
+    @media print {
+      @page { size: A4; margin: 14mm; }
+      body { font-size: 10pt; }
+      main { max-width: none; margin: 0; padding: 0; }
+      h2 { margin-top: 22px; break-after: avoid; }
+      h3 { break-after: avoid; }
+      .table-scroll { overflow: visible; border-radius: 0; }
+      .controls, .results { min-width: 0; }
+      .controls col:first-child { width: 34%; }
+      .results col:first-child { width: 24%; }
+      .results col:nth-child(2) { width: 14%; }
+      th, td { padding: 8px; }
+      .source-ref code, .case-id { font-size: 9pt; }
+      tr { break-inside: avoid; }
+      pre { white-space: pre-wrap; overflow-wrap: break-word; max-height: none; }
+    }
+  </style>
+</head>
+<body><main>
+<header>
+  <p class="meta">Raport tehnic de verificare</p>
+  <h1>Audit securitate ELS 0.6.14</h1>
+  <p class="meta">Execuția probelor: <time>2026-10-27T09:33:03.087Z</time> – <time>2026-10-27T09:35:27.347Z</time>. Datele și orele sunt UTC, în format ISO 8601.</p>
+</header>
+<aside class="summary"><strong>60 verificări trecute · 0 verificări eșuate</strong>Probele executate au trecut. Rezultatele sunt limitate la artefactul, mediul și scenariile identificate în raport.</aside>
+
+<section aria-labelledby="project-heading">
+<h2 id="project-heading">Aplicația evaluată</h2>
+<p>ELS este un editor de diagrame pentru reprezentarea infrastructurilor și a conexiunilor dintre componente. Aplicația rulează în browser dintr-un fișier HTML care include interfața, stilurile CSS și codul JavaScript.</p>
+<p>O diagramă conține noduri, containere, mașini virtuale, firewall-uri și segmente de rețea. Nodurile pot avea porturi pe laturile nord, est, sud și vest. Conexiunile pot avea puncte intermediare, etichete, săgeți și stiluri de linie. Editorul oferă selecție, mutare, redimensionare, aliniere pe grilă, grupuri de noduri sincronizate și istoric Undo/Redo.</p>
+<p>Modelul diagramei poate fi importat și exportat ca JSON ELS. Selecțiile pot fi copiate și lipite ca text JSON. Exporturile de prezentare sunt SVG, PNG, JPG și Mermaid. Biblioteca de diagrame și preferințele sunt păstrate în localStorage, în profilul browserului și pentru originea la care este deschis editorul.</p>
+<p>Modelul JSON descrie elementele grafice și relațiile dintre ele. Aplicația evaluată nu conține un serviciu de autentificare, un server de colaborare sau un mecanism de aplicare a configurațiilor pe echipamente. Serverul local și conexiunea CDP sunt folosite pentru dezvoltare și executarea probelor; fișierul HTML poate fi deschis și direct prin file://.</p>
+</section>
+
+<section aria-labelledby="identity-heading"><h2 id="identity-heading">Identificarea artefactului și a dovezilor</h2>
+<dl class="identity"><dt>Fișier evaluat</dt><dd><code>els-0.6.14.html</code></dd>
+<dt>SHA-256 fișier</dt><dd><code class="fingerprint">41c85aa2ca20fc1e2f3f77cef707725095410eb9e2a40e667cda676cf5e5b80b</code></dd>
+<dt>SHA-256 dovezi JSON</dt><dd><code class="fingerprint">7a3e3c02b22f910237bbe694a2956ab4b7cadea132da1abccbd96da776ba253d</code></dd>
+<dt>Mediul de execuție</dt><dd>Node.js v24.21.0 · Chromium 156.0.8078.4 · win32</dd></dl>
+<p>Hashul fișierului identifică exact octeții evaluați. Hashul dovezilor acoperă textul UTF-8 din elementul <code>audit-evidence</code>, fără etichetele HTML. Aceste checksumuri permit detectarea diferențelor; nu reprezintă semnături digitale sau certificări.</p>
+</section>
+
+<section aria-labelledby="method-heading"><h2 id="method-heading">Scop și metodologie</h2>
+<p>Evaluarea acoperă documentul HTML ELS, codul JavaScript și CSS încorporat, procesarea datelor de diagramă și comportamentul observabil în browser. Sunt utilizate analiză de sursă asistată de AI, parcurgere AST, verificări CSS și probe dinamice cu date sintetice în contexte Chromium izolate.</p>
+<p>Sursele de date neîncrezute considerate sunt fișierele importate, textul lipit din clipboard și conținutul stocării locale. Obiectivele verificărilor sunt prevenirea execuției de script din date, limitarea injecțiilor de stil și a cererilor externe, validarea structurii modelului și păstrarea integrității diagramei la erori.</p>
+<p>Antetele unui server de producție, extensiile browserului, compromiterea dispozitivului și securitatea programelor terțe care deschid exporturile sunt în afara evaluării. Acesta este un raport tehnic de verificare, fără certificare de către o organizație de audit independentă.</p>
+</section>
+
+<section aria-labelledby="controls-heading"><h2 id="controls-heading">Controale și fluxuri de date</h2>
+<div class="table-scroll" role="region" aria-label="Controale evaluate" tabindex="0"><table class="controls"><colgroup><col><col></colgroup><thead><tr><th scope="col">Suprafață și sursă</th><th scope="col">Control observat și limită</th></tr></thead><tbody><tr><th scope="row">Importul fișierelor<span class="source-ref"><code>importDiagramFile</code><small>linia 9862</small></span><span class="source-ref"><code>decodeCellDiagram</code><small>linia 7296</small></span></th><td>Fișierul este verificat înainte de citire, apoi parsat ca JSON, decodat și validat. Datele importate nu sunt evaluate ca JavaScript. File.size măsoară octeți; lungimea șirului JSON măsoară unități UTF-16. Limita de 10 MiB și limita șirului nu sunt măsuri identice.</td></tr>
+<tr><th scope="row">Validarea modelului<span class="source-ref"><code>validateDiagramData</code><small>linia 2842</small></span><span class="source-ref"><code>validateHierarchyDepth</code><small>linia 3105</small></span></th><td>Sunt verificate ID-urile, coordonatele finite, dimensiunile, textele, tipurile, stilurile, porturile și referințele conexiunilor. Limitele sunt 5.000 noduri, 20.000 conexiuni, 20.000 porturi în total și 128 porturi pe latură. Metadatele admit maximum 32 niveluri și 500.000 proprietăți; ierarhia de noduri admite maximum 64 niveluri. Cheile rezervate prototipului sunt respinse.</td></tr>
+<tr><th scope="row">Textele și catalogul local<span class="source-ref"><code>createNodeElement</code><small>linia 5534</small></span><span class="source-ref"><code>drawEdges</code><small>linia 6326</small></span><span class="source-ref"><code>renderSavedList</code><small>linia 10385</small></span></th><td>Etichetele sunt introduse în DOM ca text. Atribuirile innerHTML identificate au șabloane constante. Probele folosesc marcaj HTML și SVG în etichete și în numele din catalog și verifică lipsa elementelor active și a execuției. Datele din stocarea locală sunt tratate ca intrări neîncrezute.</td></tr>
+<tr><th scope="row">Culorile și stilurile<span class="source-ref"><code>isSafeDiagramColor</code><small>linia 2830</small></span></th><td>Culorile au lungime limitată și sunt verificate prin CSS.supports. URL-urile, variabilele CSS și separatorii de declarații sunt respinși în câmpurile de culoare. Analiza blocului CSS caută resurse externe și mecanisme active; proba CSSOM confirmă aplicarea stilurilor.</td></tr>
+<tr><th scope="row">Copierea și lipirea<span class="source-ref"><code>pasteDiagramData</code><small>linia 3730</small></span></th><td>Lipirea reutilizează decodarea și validarea, verifică limitele modelului rezultat și alocă ID-uri noi. Sunt exercitate evenimente paste cu JSON valid, chei rezervate și ierarhii excesive. Permisiunile clipboardului sistemului nu sunt acoperite de evenimentele sintetice.</td></tr>
+<tr><th scope="row">Exportul SVG și raster<span class="source-ref"><code>exportEsc</code><small>linia 9538</small></span><span class="source-ref"><code>exportDiagramRaster</code><small>linia 9729</small></span></th><td>Textele sunt escapate pentru XML. SVG-ul descărcat este parsat și verificat pentru elemente active, evenimente și resurse externe. PNG și JPG sunt decodate în browser. Exportul raster limitează laturile la 16.384 px și suprafața la 100 milioane pixeli; EXP-04 verifică refuzul unei laturi excesive înainte de alocarea canvasului.</td></tr>
+<tr><th scope="row">Exportul Mermaid<span class="source-ref"><code>renderMermaid</code><small>linia 9795</small></span><span class="source-ref"><code>esc</code><small>linia 9831</small></span></th><td>Revizuirea sursei identifică ID-uri generate local și escaparea etichetelor. Execuția într-un motor Mermaid terț nu face parte din probe; securitatea unui asemenea motor nu este evaluată.</td></tr>
+<tr><th scope="row">Stocarea și recuperarea<span class="source-ref"><code>storageSet</code><small>linia 10019</small></span><span class="source-ref"><code>saveActiveDiagram</code><small>linia 10132</small></span></th><td>Erorile de scriere sunt capturate și semnalate. Proba cotei păstrează modelul în memorie și verifică exportul de recuperare. Salvarea obișnuită este amânată 180 ms. Persistența și reîncărcarea sunt verificate în contextul sintetic.</td></tr>
+<tr><th scope="row">Înlocuirea modelului<span class="source-ref"><code>loadState</code><small>linia 3168</small></span><span class="source-ref"><code>calculateNodeSizes</code><small>linia 5495</small></span></th><td>Validarea adâncimii precedă mutația. Dacă randarea ulterioară eșuează, modelul, grila, vederea și selecția sunt restaurate. Salvarea noului model este programată după succes. TX-01 provoacă o eroare DOM temporară și verifică restaurarea datelor și funcționarea Undo. Un DOM indisponibil permanent poate împiedica refacerea vizuală, chiar dacă datele au fost restaurate.</td></tr></tbody></table></div>
+<p class="table-note">Reperele de linie se referă la fișierul identificat prin SHA-256. Pe ecrane înguste, tabelele pot fi derulate orizontal.</p></section>
+
+<section aria-labelledby="findings-heading"><h2 id="findings-heading">Constatări și limite</h2>
+<h3>SEC-01 · Integritatea modelului la eșecul importului</h3><p><strong>Stare: remediat și verificat.</strong> Un import care eșua în timpul randării putea înlocui modelul din memorie înainte de a raporta refuzul. Implementarea evaluată limitează adâncimea înainte de mutație și restaurează modelul, grila, vederea și selecția dacă o etapă ulterioară eșuează. CAP-01, CAP-02, CAP-03 și TX-01 verifică scenariul adversarial, limita 64/65, clipboardul și o eroare DOM provocată după validare, inclusiv păstrarea salvării și a istoricului Undo.</p>
+
+<h3>Confidențialitatea stocării locale</h3><p>Biblioteca și preferințele sunt persistate fără criptare implementată de ELS. Scripturile de aceeași origine și utilizatorii cu acces la profilul browserului pot accesa aceste date. Stocarea locală nu constituie un mecanism de autentificare sau de control al accesului. Separarea originilor și protecția profilului sunt responsabilități ale mediului de utilizare.</p>
+<h3>Politica CSP și găzduirea</h3><p>Scripturile integrate sunt autorizate prin hash. Stilurile inline sunt permise pentru stilurile dinamice ale editorului. Directiva connect-src permite adresele locale HTTP 127.0.0.1:8765 și localhost:8765 pentru reîncărcarea automată din mediul de dezvoltare. Codul EventSource este condiționat de protocol, gazdă și port.</p><p>Directiva frame-ancestors nu este aplicabilă într-un meta CSP. O politică de interzicere a încadrării în iframe trebuie furnizată prin antete HTTP când aplicația este găzduită. Antetele unui server de producție nu sunt verificate de aceste probe.</p>
+<h3>Limitele probelor</h3><p>Rezultatele demonstrează condițiile exercitate, fără garanția absenței tuturor vulnerabilităților. Evenimentele clipboard sunt sintetice. Inspecția SVG acoperă XML-ul exportat, fără a evalua toate programele care îl pot interpreta. Proba file:// acoperă Chromium din mediul indicat; alte browsere și sisteme nu sunt testate. Nu s-a executat fuzzing nelimitat sau verificare formală.</p>
+</section>
+
+<section aria-labelledby="results-heading"><h2 id="results-heading">Rezultatele probelor</h2>
+<div class="table-scroll" role="region" aria-label="Rezultatele verificărilor" tabindex="0"><table class="results"><colgroup><col><col><col></colgroup><thead><tr><th scope="col">ID</th><th scope="col">Rezultat</th><th scope="col">Probă și metodă</th></tr></thead><tbody><tr><th scope="row"><code class="case-id">SRC-01</code></th><td><span class="status pass">Trecut</span></td><td><strong>JavaScript integrat valid sintactic</strong><p>Compilare fără execuție a fiecărui script din HTML cu vm.Script.</p><details class="case-evidence"><summary>Date observate</summary><pre>{
+  &quot;scripturi&quot;: 2,
+  &quot;octetiHtml&quot;: 517916
+}</pre></details></td></tr>
+<tr><th scope="row"><code class="case-id">SRC-02</code></th><td><span class="status pass">Trecut</span></td><td><strong>CSP înaintea scripturilor și hash-uri exacte</strong><p>Recalculare SHA-256 pe scripturile normalizate LF; interzicere unsafe-eval și unsafe-inline în script-src.</p><details class="case-evidence"><summary>Date observate</summary><pre>default-src &#39;none&#39;; script-src &#39;sha256-T/MsE8LeLSu6DvyxGOjlqov/XbK7VuBUbu1/lplDCts=&#39; &#39;sha256-35RaRdXrHD82qqlISpXaQd/hcfuhCCjjH4MIg9dKfRc=&#39;; style-src &#39;unsafe-inline&#39;; img-src blob: data:; connect-src http://127.0.0.1:8765 http://localhost:8765; base-uri &#39;none&#39;; form-action &#39;none&#39;; object-src &#39;none&#39;</pre></details></td></tr>
+<tr><th scope="row"><code class="case-id">SRC-03</code></th><td><span class="status pass">Trecut</span></td><td><strong>Inventar al suprafețelor JavaScript periculoase</strong><p>Parcurgere AST a tuturor scripturilor din HTML; inventar de apeluri și atribuiri DOM, cu linii relative scriptului.</p><details class="case-evidence"><summary>Date observate</summary><pre>{
+  &quot;sinks&quot;: [
+    {
+      &quot;script&quot;: 2,
+      &quot;line&quot;: 3105,
+      &quot;sink&quot;: &quot;innerHTML&quot;,
+      &quot;valueType&quot;: &quot;StringLiteral&quot;
+    },
+    {
+      &quot;script&quot;: 2,
+      &quot;line&quot;: 8560,
+      &quot;sink&quot;: &quot;innerHTML&quot;,
+      &quot;valueType&quot;: &quot;TemplateLiteral&quot;
+    },
+    {
+      &quot;script&quot;: 2,
+      &quot;line&quot;: 8664,
+      &quot;sink&quot;: &quot;innerHTML&quot;,
+      &quot;valueType&quot;: &quot;TemplateLiteral&quot;
+    }
+  ],
+  &quot;calls&quot;: [
+    {
+      &quot;script&quot;: 1,
+      &quot;line&quot;: 14,
+      &quot;name&quot;: &quot;EventSource&quot;
+    }
+  ],
+  &quot;css&quot;: {
+    &quot;octeti&quot;: 47766,
+    &quot;blocuri&quot;: 1
+  },
+  &quot;deepHierarchy&quot;: {
+    &quot;accepted&quot;: false,
+    &quot;durationMs&quot;: 617,
+    &quot;count&quot;: 2,
+    &quot;persisted&quot;: 0
+  }
+}</pre></details></td></tr>
+<tr><th scope="row"><code class="case-id">SRC-04</code></th><td><span class="status pass">Trecut</span></td><td><strong>HTML fără încărcări sau evenimente active ascunse</strong><p>Inspecție a marcajului, separat de scripturi: src, iframe, obiecte, atribute on*, refresh și formulare.</p></td></tr>
+<tr><th scope="row"><code class="case-id">CSS-01</code></th><td><span class="status pass">Trecut</span></td><td><strong>CSS fără importuri, URL-uri sau mecanisme active</strong><p>Extragere exclusiv a blocurilor style ale HTML-ului, eliminare comentarii și verificare @import/url/expression/behavior.</p><details class="case-evidence"><summary>Date observate</summary><pre>{
+  &quot;octeti&quot;: 47766,
+  &quot;blocuri&quot;: 1
+}</pre></details></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-01</code></th><td><span class="status pass">Trecut</span></td><td><strong>ID duplicat</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-02</code></th><td><span class="status pass">Trecut</span></td><td><strong>ID cu atribut HTML</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-03</code></th><td><span class="status pass">Trecut</span></td><td><strong>Coordonată null</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-04</code></th><td><span class="status pass">Trecut</span></td><td><strong>Coordonată infinită reprezentată textual</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-05</code></th><td><span class="status pass">Trecut</span></td><td><strong>Dimensiune negativă</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-06</code></th><td><span class="status pass">Trecut</span></td><td><strong>Dimensiune excesivă</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-07</code></th><td><span class="status pass">Trecut</span></td><td><strong>Etichetă obiect</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-08</code></th><td><span class="status pass">Trecut</span></td><td><strong>Etichetă prea lungă</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-09</code></th><td><span class="status pass">Trecut</span></td><td><strong>Porturi excesive</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-10</code></th><td><span class="status pass">Trecut</span></td><td><strong>Porturi negative</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-11</code></th><td><span class="status pass">Trecut</span></td><td><strong>Latură necunoscută</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-12</code></th><td><span class="status pass">Trecut</span></td><td><strong>Poziție port textuală</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-13</code></th><td><span class="status pass">Trecut</span></td><td><strong>Referință inexistentă</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-14</code></th><td><span class="status pass">Trecut</span></td><td><strong>Linie duplicată</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-15</code></th><td><span class="status pass">Trecut</span></td><td><strong>Prea multe puncte</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-16</code></th><td><span class="status pass">Trecut</span></td><td><strong>Punct corupt</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-17</code></th><td><span class="status pass">Trecut</span></td><td><strong>Săgeată necunoscută</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-18</code></th><td><span class="status pass">Trecut</span></td><td><strong>Stil linie necunoscut</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-19</code></th><td><span class="status pass">Trecut</span></td><td><strong>Tip nod necunoscut</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-20</code></th><td><span class="status pass">Trecut</span></td><td><strong>Grilă nulă</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-21</code></th><td><span class="status pass">Trecut</span></td><td><strong>Versiune necunoscută</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-22</code></th><td><span class="status pass">Trecut</span></td><td><strong>Contor nesigur</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-23</code></th><td><span class="status pass">Trecut</span></td><td><strong>ID numeric nesigur</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VAL-24</code></th><td><span class="status pass">Trecut</span></td><td><strong>Ancoră text coruptă</strong><p>Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">LIMIT-03</code></th><td><span class="status pass">Trecut</span></td><td><strong>Limite globale de noduri, linii și porturi</strong><p>Modele peste 5.000 noduri, 20.000 linii și 20.000 porturi; toate trebuie respinse înainte de înlocuire.</p></td></tr>
+<tr><th scope="row"><code class="case-id">HIER-01</code></th><td><span class="status pass">Trecut</span></td><td><strong>Cicluri și părinți inexistenți normalizați</strong><p>Ciclu între două noduri, apoi părinte absent; randare fără ciclu în modelul rezultat.</p></td></tr>
+<tr><th scope="row"><code class="case-id">VALID-01</code></th><td><span class="status pass">Trecut</span></td><td><strong>Date valide la limite: text și 64 puncte</strong><p>Etichetă de 10.000 caractere, 64 puncte și capete libere; acceptarea limitei fără erori de randare.</p></td></tr>
+<tr><th scope="row"><code class="case-id">INJ-C0</code></th><td><span class="status pass">Trecut</span></td><td><strong>Injecție CSS în culoare 1</strong><p>Import culoare ostilă în fill, stroke, textColor, color și labelColor.</p></td></tr>
+<tr><th scope="row"><code class="case-id">INJ-C1</code></th><td><span class="status pass">Trecut</span></td><td><strong>Injecție CSS în culoare 2</strong><p>Import culoare ostilă în fill, stroke, textColor, color și labelColor.</p></td></tr>
+<tr><th scope="row"><code class="case-id">INJ-C2</code></th><td><span class="status pass">Trecut</span></td><td><strong>Injecție CSS în culoare 3</strong><p>Import culoare ostilă în fill, stroke, textColor, color și labelColor.</p></td></tr>
+<tr><th scope="row"><code class="case-id">INJ-C3</code></th><td><span class="status pass">Trecut</span></td><td><strong>Injecție CSS în culoare 4</strong><p>Import culoare ostilă în fill, stroke, textColor, color și labelColor.</p></td></tr>
+<tr><th scope="row"><code class="case-id">PROTO-__proto__</code></th><td><span class="status pass">Trecut</span></td><td><strong>Cheie rezervată __proto__</strong><p>Cheia este transmisă în JSON textual, fără normalizare prin transportul browserului.</p></td></tr>
+<tr><th scope="row"><code class="case-id">PROTO-constructor</code></th><td><span class="status pass">Trecut</span></td><td><strong>Cheie rezervată constructor</strong><p>Cheia este transmisă în JSON textual, fără normalizare prin transportul browserului.</p></td></tr>
+<tr><th scope="row"><code class="case-id">PROTO-prototype</code></th><td><span class="status pass">Trecut</span></td><td><strong>Cheie rezervată prototype</strong><p>Cheia este transmisă în JSON textual, fără normalizare prin transportul browserului.</p></td></tr>
+<tr><th scope="row"><code class="case-id">LIMIT-01</code></th><td><span class="status pass">Trecut</span></td><td><strong>Fișier peste 10 MiB refuzat înainte de citire</strong><p>Obiect File sintetic cu text() care aruncă excepție dacă este citit.</p></td></tr>
+<tr><th scope="row"><code class="case-id">LIMIT-02</code></th><td><span class="status pass">Trecut</span></td><td><strong>JSON invalid și metadate profund imbricate</strong><p>JSON trunchiat și lanț de 40 obiecte metadata; comparație cu modelul anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">XSS-01</code></th><td><span class="status pass">Trecut</span></td><td><strong>Texte ostile în noduri și linii</strong><p>Payload-uri HTML, SVG, închidere script și entități importate ca etichete; inspecție DOM și marker de execuție.</p><details class="case-evidence"><summary>Date observate</summary><pre>{
+  &quot;payloaduri&quot;: 5
+}</pre></details></td></tr>
+<tr><th scope="row"><code class="case-id">CLIP-01</code></th><td><span class="status pass">Trecut</span></td><td><strong>Clipboard JSON ostil fără execuție</strong><p>Eveniment paste real DOM cu DataTransfer; etichetă ostilă, apoi date cu prototip.</p></td></tr>
+<tr><th scope="row"><code class="case-id">EXP-01</code></th><td><span class="status pass">Trecut</span></td><td><strong>SVG exportat: text inofensiv și fără resurse externe</strong><p>Export real, parsare XML în browser; interzicere script, foreignObject, evenimente și URL-uri de resurse.</p><details class="case-evidence"><summary>Date observate</summary><pre>{
+  &quot;octeti&quot;: 1823,
+  &quot;sha256&quot;: &quot;75fa24668a6c025c454507b98b557b1f084775ef65b1d9dc1dba8066eec05254&quot;
+}</pre></details></td></tr>
+<tr><th scope="row"><code class="case-id">EXP-02</code></th><td><span class="status pass">Trecut</span></td><td><strong>JSON exportat și reimportat fără pierdere de model</strong><p>Descărcare reală ELS, parsare JSON și reimport, comparație nodes/edges.</p></td></tr>
+<tr><th scope="row"><code class="case-id">EXP-03</code></th><td><span class="status pass">Trecut</span></td><td><strong>PNG și JPG valide la export</strong><p>Descărcări reale la 100%; verificare semnături și decodare imagine în browser.</p></td></tr>
+<tr><th scope="row"><code class="case-id">CSP-01</code></th><td><span class="status pass">Trecut</span></td><td><strong>Blocarea scripturilor injectate</strong><p>Adăugare script inline fără hash și atribut onerror; evenimente securitypolicyviolation înregistrate.</p></td></tr>
+<tr><th scope="row"><code class="case-id">CSP-02</code></th><td><span class="status pass">Trecut</span></td><td><strong>Blocarea resurselor externe prin CSP</strong><p>Încercări controlate de imagine și conexiune externă; verificare încălcare img-src și connect-src.</p><details class="case-evidence"><summary>Date observate</summary><pre>[
+  {
+    &quot;directive&quot;: &quot;connect-src&quot;,
+    &quot;blockedURI&quot;: &quot;https://blocked-audit.invalid/data&quot;
+  },
+  {
+    &quot;directive&quot;: &quot;img-src&quot;,
+    &quot;blockedURI&quot;: &quot;https://blocked-audit.invalid/x.png&quot;
+  }
+]</pre></details></td></tr>
+<tr><th scope="row"><code class="case-id">CSS-02</code></th><td><span class="status pass">Trecut</span></td><td><strong>Foi de stil parsate și geometrie funcțională</strong><p>CSSOM, stil calculat și coordonate după import; comparație model înainte și după zoom.</p><details class="case-evidence"><summary>Date observate</summary><pre>{
+  &quot;rules&quot;: 329,
+  &quot;position&quot;: &quot;absolute&quot;,
+  &quot;nodes&quot;: [
+    [
+      80,
+      80
+    ],
+    [
+      80,
+      300
+    ]
+  ]
+}</pre></details></td></tr>
+<tr><th scope="row"><code class="case-id">EXP-04</code></th><td><span class="status pass">Trecut</span></td><td><strong>Export raster excesiv refuzat înainte de alocarea canvas</strong><p>Model sintetic cu lățime de 100.000 px; instrumentare temporară a createElement și monitorizare download.</p></td></tr>
+<tr><th scope="row"><code class="case-id">STORE-01</code></th><td><span class="status pass">Trecut</span></td><td><strong>Persistență locală și reîncărcare</strong><p>Import valid, așteptare salvare și reload; comparație model în context izolat.</p></td></tr>
+<tr><th scope="row"><code class="case-id">STORE-02</code></th><td><span class="status pass">Trecut</span></td><td><strong>Stocare coruptă nu execută marcaj HTML</strong><p>Înlocuirea exclusiv a diagramei sintetice active cu JSON invalid; reload și verificare marker.</p></td></tr>
+<tr><th scope="row"><code class="case-id">STORE-03</code></th><td><span class="status pass">Trecut</span></td><td><strong>Numele ostile din catalog sunt afișate ca text</strong><p>Catalog sintetic cu etichetă img/onerror și intrări nevalide; reload și inspecție DOM.</p></td></tr>
+<tr><th scope="row"><code class="case-id">STORE-04</code></th><td><span class="status pass">Trecut</span></td><td><strong>Refuzul scrierii în storage nu pierde modelul în memorie</strong><p>Simulare QuotaExceededError numai în contextul sintetic; verificare toast și export JSON de recuperare.</p></td></tr>
+<tr><th scope="row"><code class="case-id">CAP-01</code></th><td><span class="status pass">Trecut</span></td><td><strong>Lanț de 5.000 noduri: refuz atomic și persistență</strong><p>Lanț sintetic valid structural, la limita declarată. Dacă importul refuză, modelul și salvarea trebuie să păstreze baza.</p><details class="case-evidence"><summary>Date observate</summary><pre>{
+  &quot;accepted&quot;: false,
+  &quot;durationMs&quot;: 617,
+  &quot;count&quot;: 2,
+  &quot;persisted&quot;: 0
+}</pre></details></td></tr>
+<tr><th scope="row"><code class="case-id">CAP-02</code></th><td><span class="status pass">Trecut</span></td><td><strong>Ierarhie de 64 niveluri acceptată, 65 respinsă</strong><p>Probe de ambele părți ale limitei; refuzul păstrează modelul acceptat anterior.</p></td></tr>
+<tr><th scope="row"><code class="case-id">TX-01</code></th><td><span class="status pass">Trecut</span></td><td><strong>Eroare de randare: restaurare model, grilă, vedere, selecție și salvare</strong><p>Defect DOM temporar provocat după validare într-un import cu altă grilă și vedere; restaurare și verificare după salvarea amânată.</p><details class="case-evidence"><summary>Date observate</summary><pre>Eroare injectată o singură dată; modelul, grila, vederea, selecția, salvarea și Undo sunt păstrate.</pre></details></td></tr>
+<tr><th scope="row"><code class="case-id">CAP-03</code></th><td><span class="status pass">Trecut</span></td><td><strong>Clipboard refuză ierarhia excesivă înainte de inserare</strong><p>Eveniment paste cu 65 niveluri; verificare model neschimbat.</p></td></tr>
+<tr><th scope="row"><code class="case-id">NET-01</code></th><td><span class="status pass">Trecut</span></td><td><strong>Nicio transmisie externă în scenariile testate</strong><p>Toate cererile din context sunt inventariate; cele externe sunt oprite înainte să părăsească browserul.</p><details class="case-evidence"><summary>Date observate</summary><pre>{
+  &quot;requests&quot;: [
+    &quot;https://els-audit.invalid/&quot;,
+    &quot;https://els-audit.invalid/&quot;,
+    &quot;https://els-audit.invalid/&quot;,
+    &quot;https://els-audit.invalid/&quot;,
+    &quot;file:///els-0.6.14.html&quot;
+  ],
+  &quot;blockedByCsp&quot;: []
+}</pre></details></td></tr>
+<tr><th scope="row"><code class="case-id">OFFLINE-01</code></th><td><span class="status pass">Trecut</span></td><td><strong>Deschidere file:// și import fără rețea</strong><p>Același HTML deschis local în context cu rețeaua oprită.</p><details class="case-evidence"><summary>Date observate</summary><pre>Import valid acceptat.</pre></details></td></tr></tbody></table></div></section>
+
+<section aria-labelledby="reproduction-heading"><h2 id="reproduction-heading">Reproducerea verificărilor</h2>
+<ol><li>Verifică hashul fișierului <code>public/els-0.6.14.html</code> față de identificarea din raport.</li><li>În checkoutul proiectului, pornește serverul local și Chromium CDP cu scripturile de mai jos.</li><li>Execută suita de verificări. Sunt create contexte de browser separate pentru datele sintetice.</li><li>Compară hashul țintei, mediul, momentul execuției și rezultatele individuale ale noii rulări.</li></ol>
+<pre>.\scripts\start-local-server.ps1
+.\scripts\start-cdp-browser.ps1
+&amp; '.local-runtime/fnm-data/node-versions/v24.21.0/installation/node.exe' scripts/tests/security/audit-html.cjs</pre>
+<p>Suita scrie raportul în <code>public/els-0.6.14-audit-securitate.html</code>. Codul de ieșire este 0 pentru toate probele trecute, 2 pentru probe eșuate și 1 pentru întreruperea execuției. Rezultatele brute locale sunt în <code>.local-runtime/test-artifacts/audit-html-0.6.14/</code>. O nouă execuție înlocuiește raportul aceleiași versiuni.</p>
+<dl class="identity"><dt>SHA-256 suită</dt><dd><code class="fingerprint">f2c5fa0eccacddc343ec2801f8f76ba34a0347a60afd1d6059eff1be1ea86a68</code></dd><dt>SHA-256 generator raport</dt><dd><code class="fingerprint">95151ecdc82c66810220b9673dacbf798d82060dbf229044a315799b7f61b6d6</code></dd></dl>
+</section>
+
+<section aria-labelledby="references-heading"><h2 id="references-heading">Referințe tehnice</h2><ul>
+<li><a href="https://cheatsheetseries.owasp.org/cheatsheets/HTML5_Security_Cheat_Sheet.html">OWASP HTML5 Security Cheat Sheet</a>: date neîncrezute, origine și stocare locală.</li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/frame-ancestors">MDN: CSP frame-ancestors</a>: limitarea politicilor livrate prin meta.</li>
+<li><a href="https://www.w3.org/TR/CSP3/">W3C Content Security Policy</a>: autorizarea resurselor și execuția scripturilor.</li></ul></section>
+
+<section aria-labelledby="evidence-heading"><h2 id="evidence-heading">Dovezi încorporate</h2><p>Setul de date include rezultatele, metodele, duratele, identificarea țintei și inventarul de sursă. Căile absolute ale stației pentru navigările file:// sunt omise din exemplarul public.</p><details><summary>Deschide setul complet de dovezi JSON</summary><pre>{
+  &quot;schema&quot;: 1,
+  &quot;artifact&quot;: &quot;els-0.6.14.html&quot;,
+  &quot;version&quot;: &quot;0.6.14&quot;,
+  &quot;sha256&quot;: &quot;41c85aa2ca20fc1e2f3f77cef707725095410eb9e2a40e667cda676cf5e5b80b&quot;,
+  &quot;started&quot;: &quot;2026-10-27T09:33:03.087Z&quot;,
+  &quot;finished&quot;: &quot;2026-10-27T09:35:27.347Z&quot;,
+  &quot;environment&quot;: {
+    &quot;node&quot;: &quot;v24.21.0&quot;,
+    &quot;chromium&quot;: &quot;156.0.8078.4&quot;,
+    &quot;platform&quot;: &quot;win32&quot;
+  },
+  &quot;scope&quot;: &quot;Evaluarea documentului HTML ELS, a codului JavaScript și CSS încorporat și a procesării modelului de diagramă în browser.&quot;,
+  &quot;inventory&quot;: {
+    &quot;sinks&quot;: [
+      {
+        &quot;script&quot;: 2,
+        &quot;line&quot;: 3105,
+        &quot;sink&quot;: &quot;innerHTML&quot;,
+        &quot;valueType&quot;: &quot;StringLiteral&quot;
+      },
+      {
+        &quot;script&quot;: 2,
+        &quot;line&quot;: 8560,
+        &quot;sink&quot;: &quot;innerHTML&quot;,
+        &quot;valueType&quot;: &quot;TemplateLiteral&quot;
+      },
+      {
+        &quot;script&quot;: 2,
+        &quot;line&quot;: 8664,
+        &quot;sink&quot;: &quot;innerHTML&quot;,
+        &quot;valueType&quot;: &quot;TemplateLiteral&quot;
+      }
+    ],
+    &quot;calls&quot;: [
+      {
+        &quot;script&quot;: 1,
+        &quot;line&quot;: 14,
+        &quot;name&quot;: &quot;EventSource&quot;
+      }
+    ],
+    &quot;css&quot;: {
+      &quot;octeti&quot;: 47766,
+      &quot;blocuri&quot;: 1
+    },
+    &quot;deepHierarchy&quot;: {
+      &quot;accepted&quot;: false,
+      &quot;durationMs&quot;: 617,
+      &quot;count&quot;: 2,
+      &quot;persisted&quot;: 0
+    }
+  },
+  &quot;errors&quot;: [],
+  &quot;results&quot;: [
+    {
+      &quot;id&quot;: &quot;SRC-01&quot;,
+      &quot;title&quot;: &quot;JavaScript integrat valid sintactic&quot;,
+      &quot;method&quot;: &quot;Compilare fără execuție a fiecărui script din HTML cu vm.Script.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:12.002Z&quot;,
+      &quot;durationMs&quot;: 22,
+      &quot;detail&quot;: {
+        &quot;scripturi&quot;: 2,
+        &quot;octetiHtml&quot;: 517916
+      }
+    },
+    {
+      &quot;id&quot;: &quot;SRC-02&quot;,
+      &quot;title&quot;: &quot;CSP înaintea scripturilor și hash-uri exacte&quot;,
+      &quot;method&quot;: &quot;Recalculare SHA-256 pe scripturile normalizate LF; interzicere unsafe-eval și unsafe-inline în script-src.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:14.153Z&quot;,
+      &quot;durationMs&quot;: 4,
+      &quot;detail&quot;: &quot;default-src &#39;none&#39;; script-src &#39;sha256-T/MsE8LeLSu6DvyxGOjlqov/XbK7VuBUbu1/lplDCts=&#39; &#39;sha256-35RaRdXrHD82qqlISpXaQd/hcfuhCCjjH4MIg9dKfRc=&#39;; style-src &#39;unsafe-inline&#39;; img-src blob: data:; connect-src http://127.0.0.1:8765 http://localhost:8765; base-uri &#39;none&#39;; form-action &#39;none&#39;; object-src &#39;none&#39;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;SRC-03&quot;,
+      &quot;title&quot;: &quot;Inventar al suprafețelor JavaScript periculoase&quot;,
+      &quot;method&quot;: &quot;Parcurgere AST a tuturor scripturilor din HTML; inventar de apeluri și atribuiri DOM, cu linii relative scriptului.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:16.193Z&quot;,
+      &quot;durationMs&quot;: 527,
+      &quot;detail&quot;: {
+        &quot;sinks&quot;: [
+          {
+            &quot;script&quot;: 2,
+            &quot;line&quot;: 3105,
+            &quot;sink&quot;: &quot;innerHTML&quot;,
+            &quot;valueType&quot;: &quot;StringLiteral&quot;
+          },
+          {
+            &quot;script&quot;: 2,
+            &quot;line&quot;: 8560,
+            &quot;sink&quot;: &quot;innerHTML&quot;,
+            &quot;valueType&quot;: &quot;TemplateLiteral&quot;
+          },
+          {
+            &quot;script&quot;: 2,
+            &quot;line&quot;: 8664,
+            &quot;sink&quot;: &quot;innerHTML&quot;,
+            &quot;valueType&quot;: &quot;TemplateLiteral&quot;
+          }
+        ],
+        &quot;calls&quot;: [
+          {
+            &quot;script&quot;: 1,
+            &quot;line&quot;: 14,
+            &quot;name&quot;: &quot;EventSource&quot;
+          }
+        ],
+        &quot;css&quot;: {
+          &quot;octeti&quot;: 47766,
+          &quot;blocuri&quot;: 1
+        },
+        &quot;deepHierarchy&quot;: {
+          &quot;accepted&quot;: false,
+          &quot;durationMs&quot;: 617,
+          &quot;count&quot;: 2,
+          &quot;persisted&quot;: 0
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;SRC-04&quot;,
+      &quot;title&quot;: &quot;HTML fără încărcări sau evenimente active ascunse&quot;,
+      &quot;method&quot;: &quot;Inspecție a marcajului, separat de scripturi: src, iframe, obiecte, atribute on*, refresh și formulare.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:18.748Z&quot;,
+      &quot;durationMs&quot;: 1,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;CSS-01&quot;,
+      &quot;title&quot;: &quot;CSS fără importuri, URL-uri sau mecanisme active&quot;,
+      &quot;method&quot;: &quot;Extragere exclusiv a blocurilor style ale HTML-ului, eliminare comentarii și verificare @import/url/expression/behavior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:20.779Z&quot;,
+      &quot;durationMs&quot;: 3,
+      &quot;detail&quot;: {
+        &quot;octeti&quot;: 47766,
+        &quot;blocuri&quot;: 1
+      }
+    },
+    {
+      &quot;id&quot;: &quot;VAL-01&quot;,
+      &quot;title&quot;: &quot;ID duplicat&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:22.920Z&quot;,
+      &quot;durationMs&quot;: 56,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-02&quot;,
+      &quot;title&quot;: &quot;ID cu atribut HTML&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:25.113Z&quot;,
+      &quot;durationMs&quot;: 26,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-03&quot;,
+      &quot;title&quot;: &quot;Coordonată null&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:27.168Z&quot;,
+      &quot;durationMs&quot;: 32,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-04&quot;,
+      &quot;title&quot;: &quot;Coordonată infinită reprezentată textual&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:29.276Z&quot;,
+      &quot;durationMs&quot;: 21,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-05&quot;,
+      &quot;title&quot;: &quot;Dimensiune negativă&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:31.311Z&quot;,
+      &quot;durationMs&quot;: 23,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-06&quot;,
+      &quot;title&quot;: &quot;Dimensiune excesivă&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:33.354Z&quot;,
+      &quot;durationMs&quot;: 28,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-07&quot;,
+      &quot;title&quot;: &quot;Etichetă obiect&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:35.413Z&quot;,
+      &quot;durationMs&quot;: 21,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-08&quot;,
+      &quot;title&quot;: &quot;Etichetă prea lungă&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:37.585Z&quot;,
+      &quot;durationMs&quot;: 21,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-09&quot;,
+      &quot;title&quot;: &quot;Porturi excesive&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:39.628Z&quot;,
+      &quot;durationMs&quot;: 25,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-10&quot;,
+      &quot;title&quot;: &quot;Porturi negative&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:41.793Z&quot;,
+      &quot;durationMs&quot;: 20,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-11&quot;,
+      &quot;title&quot;: &quot;Latură necunoscută&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:43.837Z&quot;,
+      &quot;durationMs&quot;: 17,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-12&quot;,
+      &quot;title&quot;: &quot;Poziție port textuală&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:45.879Z&quot;,
+      &quot;durationMs&quot;: 27,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-13&quot;,
+      &quot;title&quot;: &quot;Referință inexistentă&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:47.924Z&quot;,
+      &quot;durationMs&quot;: 18,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-14&quot;,
+      &quot;title&quot;: &quot;Linie duplicată&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:49.976Z&quot;,
+      &quot;durationMs&quot;: 25,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-15&quot;,
+      &quot;title&quot;: &quot;Prea multe puncte&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:52.120Z&quot;,
+      &quot;durationMs&quot;: 20,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-16&quot;,
+      &quot;title&quot;: &quot;Punct corupt&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:54.284Z&quot;,
+      &quot;durationMs&quot;: 19,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-17&quot;,
+      &quot;title&quot;: &quot;Săgeată necunoscută&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:56.324Z&quot;,
+      &quot;durationMs&quot;: 20,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-18&quot;,
+      &quot;title&quot;: &quot;Stil linie necunoscut&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:33:58.377Z&quot;,
+      &quot;durationMs&quot;: 17,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-19&quot;,
+      &quot;title&quot;: &quot;Tip nod necunoscut&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:00.537Z&quot;,
+      &quot;durationMs&quot;: 24,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-20&quot;,
+      &quot;title&quot;: &quot;Grilă nulă&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:02.608Z&quot;,
+      &quot;durationMs&quot;: 21,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-21&quot;,
+      &quot;title&quot;: &quot;Versiune necunoscută&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:04.649Z&quot;,
+      &quot;durationMs&quot;: 20,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-22&quot;,
+      &quot;title&quot;: &quot;Contor nesigur&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:06.796Z&quot;,
+      &quot;durationMs&quot;: 19,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-23&quot;,
+      &quot;title&quot;: &quot;ID numeric nesigur&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:08.971Z&quot;,
+      &quot;durationMs&quot;: 20,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VAL-24&quot;,
+      &quot;title&quot;: &quot;Ancoră text coruptă&quot;,
+      &quot;method&quot;: &quot;Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:11.136Z&quot;,
+      &quot;durationMs&quot;: 23,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;LIMIT-03&quot;,
+      &quot;title&quot;: &quot;Limite globale de noduri, linii și porturi&quot;,
+      &quot;method&quot;: &quot;Modele peste 5.000 noduri, 20.000 linii și 20.000 porturi; toate trebuie respinse înainte de înlocuire.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:13.246Z&quot;,
+      &quot;durationMs&quot;: 207,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;HIER-01&quot;,
+      &quot;title&quot;: &quot;Cicluri și părinți inexistenți normalizați&quot;,
+      &quot;method&quot;: &quot;Ciclu între două noduri, apoi părinte absent; randare fără ciclu în modelul rezultat.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:15.504Z&quot;,
+      &quot;durationMs&quot;: 37,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;VALID-01&quot;,
+      &quot;title&quot;: &quot;Date valide la limite: text și 64 puncte&quot;,
+      &quot;method&quot;: &quot;Etichetă de 10.000 caractere, 64 puncte și capete libere; acceptarea limitei fără erori de randare.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:17.668Z&quot;,
+      &quot;durationMs&quot;: 118,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;INJ-C0&quot;,
+      &quot;title&quot;: &quot;Injecție CSS în culoare 1&quot;,
+      &quot;method&quot;: &quot;Import culoare ostilă în fill, stroke, textColor, color și labelColor.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:19.961Z&quot;,
+      &quot;durationMs&quot;: 68,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;INJ-C1&quot;,
+      &quot;title&quot;: &quot;Injecție CSS în culoare 2&quot;,
+      &quot;method&quot;: &quot;Import culoare ostilă în fill, stroke, textColor, color și labelColor.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:22.303Z&quot;,
+      &quot;durationMs&quot;: 69,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;INJ-C2&quot;,
+      &quot;title&quot;: &quot;Injecție CSS în culoare 3&quot;,
+      &quot;method&quot;: &quot;Import culoare ostilă în fill, stroke, textColor, color și labelColor.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:24.406Z&quot;,
+      &quot;durationMs&quot;: 53,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;INJ-C3&quot;,
+      &quot;title&quot;: &quot;Injecție CSS în culoare 4&quot;,
+      &quot;method&quot;: &quot;Import culoare ostilă în fill, stroke, textColor, color și labelColor.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:26.497Z&quot;,
+      &quot;durationMs&quot;: 52,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;PROTO-__proto__&quot;,
+      &quot;title&quot;: &quot;Cheie rezervată __proto__&quot;,
+      &quot;method&quot;: &quot;Cheia este transmisă în JSON textual, fără normalizare prin transportul browserului.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:28.652Z&quot;,
+      &quot;durationMs&quot;: 68,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;PROTO-constructor&quot;,
+      &quot;title&quot;: &quot;Cheie rezervată constructor&quot;,
+      &quot;method&quot;: &quot;Cheia este transmisă în JSON textual, fără normalizare prin transportul browserului.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:30.899Z&quot;,
+      &quot;durationMs&quot;: 33,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;PROTO-prototype&quot;,
+      &quot;title&quot;: &quot;Cheie rezervată prototype&quot;,
+      &quot;method&quot;: &quot;Cheia este transmisă în JSON textual, fără normalizare prin transportul browserului.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:33.164Z&quot;,
+      &quot;durationMs&quot;: 32,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;LIMIT-01&quot;,
+      &quot;title&quot;: &quot;Fișier peste 10 MiB refuzat înainte de citire&quot;,
+      &quot;method&quot;: &quot;Obiect File sintetic cu text() care aruncă excepție dacă este citit.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:35.248Z&quot;,
+      &quot;durationMs&quot;: 23,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;LIMIT-02&quot;,
+      &quot;title&quot;: &quot;JSON invalid și metadate profund imbricate&quot;,
+      &quot;method&quot;: &quot;JSON trunchiat și lanț de 40 obiecte metadata; comparație cu modelul anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:37.334Z&quot;,
+      &quot;durationMs&quot;: 30,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;XSS-01&quot;,
+      &quot;title&quot;: &quot;Texte ostile în noduri și linii&quot;,
+      &quot;method&quot;: &quot;Payload-uri HTML, SVG, închidere script și entități importate ca etichete; inspecție DOM și marker de execuție.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:39.424Z&quot;,
+      &quot;durationMs&quot;: 131,
+      &quot;detail&quot;: {
+        &quot;payloaduri&quot;: 5
+      }
+    },
+    {
+      &quot;id&quot;: &quot;CLIP-01&quot;,
+      &quot;title&quot;: &quot;Clipboard JSON ostil fără execuție&quot;,
+      &quot;method&quot;: &quot;Eveniment paste real DOM cu DataTransfer; etichetă ostilă, apoi date cu prototip.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:41.635Z&quot;,
+      &quot;durationMs&quot;: 88,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;EXP-01&quot;,
+      &quot;title&quot;: &quot;SVG exportat: text inofensiv și fără resurse externe&quot;,
+      &quot;method&quot;: &quot;Export real, parsare XML în browser; interzicere script, foreignObject, evenimente și URL-uri de resurse.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:43.783Z&quot;,
+      &quot;durationMs&quot;: 1242,
+      &quot;detail&quot;: {
+        &quot;octeti&quot;: 1823,
+        &quot;sha256&quot;: &quot;75fa24668a6c025c454507b98b557b1f084775ef65b1d9dc1dba8066eec05254&quot;
+      }
+    },
+    {
+      &quot;id&quot;: &quot;EXP-02&quot;,
+      &quot;title&quot;: &quot;JSON exportat și reimportat fără pierdere de model&quot;,
+      &quot;method&quot;: &quot;Descărcare reală ELS, parsare JSON și reimport, comparație nodes/edges.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:47.061Z&quot;,
+      &quot;durationMs&quot;: 256,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;EXP-03&quot;,
+      &quot;title&quot;: &quot;PNG și JPG valide la export&quot;,
+      &quot;method&quot;: &quot;Descărcări reale la 100%; verificare semnături și decodare imagine în browser.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:49.429Z&quot;,
+      &quot;durationMs&quot;: 1618,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;CSP-01&quot;,
+      &quot;title&quot;: &quot;Blocarea scripturilor injectate&quot;,
+      &quot;method&quot;: &quot;Adăugare script inline fără hash și atribut onerror; evenimente securitypolicyviolation înregistrate.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:53.114Z&quot;,
+      &quot;durationMs&quot;: 62,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;CSP-02&quot;,
+      &quot;title&quot;: &quot;Blocarea resurselor externe prin CSP&quot;,
+      &quot;method&quot;: &quot;Încercări controlate de imagine și conexiune externă; verificare încălcare img-src și connect-src.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:55.235Z&quot;,
+      &quot;durationMs&quot;: 106,
+      &quot;detail&quot;: [
+        {
+          &quot;directive&quot;: &quot;connect-src&quot;,
+          &quot;blockedURI&quot;: &quot;https://blocked-audit.invalid/data&quot;
+        },
+        {
+          &quot;directive&quot;: &quot;img-src&quot;,
+          &quot;blockedURI&quot;: &quot;https://blocked-audit.invalid/x.png&quot;
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;CSS-02&quot;,
+      &quot;title&quot;: &quot;Foi de stil parsate și geometrie funcțională&quot;,
+      &quot;method&quot;: &quot;CSSOM, stil calculat și coordonate după import; comparație model înainte și după zoom.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:57.387Z&quot;,
+      &quot;durationMs&quot;: 27,
+      &quot;detail&quot;: {
+        &quot;rules&quot;: 329,
+        &quot;position&quot;: &quot;absolute&quot;,
+        &quot;nodes&quot;: [
+          [
+            80,
+            80
+          ],
+          [
+            80,
+            300
+          ]
+        ]
+      }
+    },
+    {
+      &quot;id&quot;: &quot;EXP-04&quot;,
+      &quot;title&quot;: &quot;Export raster excesiv refuzat înainte de alocarea canvas&quot;,
+      &quot;method&quot;: &quot;Model sintetic cu lățime de 100.000 px; instrumentare temporară a createElement și monitorizare download.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:34:59.487Z&quot;,
+      &quot;durationMs&quot;: 124,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;STORE-01&quot;,
+      &quot;title&quot;: &quot;Persistență locală și reîncărcare&quot;,
+      &quot;method&quot;: &quot;Import valid, așteptare salvare și reload; comparație model în context izolat.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:35:01.701Z&quot;,
+      &quot;durationMs&quot;: 729,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;STORE-02&quot;,
+      &quot;title&quot;: &quot;Stocare coruptă nu execută marcaj HTML&quot;,
+      &quot;method&quot;: &quot;Înlocuirea exclusiv a diagramei sintetice active cu JSON invalid; reload și verificare marker.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:35:04.478Z&quot;,
+      &quot;durationMs&quot;: 295,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;STORE-03&quot;,
+      &quot;title&quot;: &quot;Numele ostile din catalog sunt afișate ca text&quot;,
+      &quot;method&quot;: &quot;Catalog sintetic cu etichetă img/onerror și intrări nevalide; reload și inspecție DOM.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:35:06.824Z&quot;,
+      &quot;durationMs&quot;: 959,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;STORE-04&quot;,
+      &quot;title&quot;: &quot;Refuzul scrierii în storage nu pierde modelul în memorie&quot;,
+      &quot;method&quot;: &quot;Simulare QuotaExceededError numai în contextul sintetic; verificare toast și export JSON de recuperare.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:35:10.266Z&quot;,
+      &quot;durationMs&quot;: 928,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;CAP-01&quot;,
+      &quot;title&quot;: &quot;Lanț de 5.000 noduri: refuz atomic și persistență&quot;,
+      &quot;method&quot;: &quot;Lanț sintetic valid structural, la limita declarată. Dacă importul refuză, modelul și salvarea trebuie să păstreze baza.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:35:13.361Z&quot;,
+      &quot;durationMs&quot;: 1127,
+      &quot;detail&quot;: {
+        &quot;accepted&quot;: false,
+        &quot;durationMs&quot;: 617,
+        &quot;count&quot;: 2,
+        &quot;persisted&quot;: 0
+      }
+    },
+    {
+      &quot;id&quot;: &quot;CAP-02&quot;,
+      &quot;title&quot;: &quot;Ierarhie de 64 niveluri acceptată, 65 respinsă&quot;,
+      &quot;method&quot;: &quot;Probe de ambele părți ale limitei; refuzul păstrează modelul acceptat anterior.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:35:16.533Z&quot;,
+      &quot;durationMs&quot;: 69,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;TX-01&quot;,
+      &quot;title&quot;: &quot;Eroare de randare: restaurare model, grilă, vedere, selecție și salvare&quot;,
+      &quot;method&quot;: &quot;Defect DOM temporar provocat după validare într-un import cu altă grilă și vedere; restaurare și verificare după salvarea amânată.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:35:19.002Z&quot;,
+      &quot;durationMs&quot;: 1045,
+      &quot;detail&quot;: &quot;Eroare injectată o singură dată; modelul, grila, vederea, selecția, salvarea și Undo sunt păstrate.&quot;
+    },
+    {
+      &quot;id&quot;: &quot;CAP-03&quot;,
+      &quot;title&quot;: &quot;Clipboard refuză ierarhia excesivă înainte de inserare&quot;,
+      &quot;method&quot;: &quot;Eveniment paste cu 65 niveluri; verificare model neschimbat.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:35:22.724Z&quot;,
+      &quot;durationMs&quot;: 27,
+      &quot;detail&quot;: &quot;&quot;
+    },
+    {
+      &quot;id&quot;: &quot;NET-01&quot;,
+      &quot;title&quot;: &quot;Nicio transmisie externă în scenariile testate&quot;,
+      &quot;method&quot;: &quot;Toate cererile din context sunt inventariate; cele externe sunt oprite înainte să părăsească browserul.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;at&quot;: &quot;2026-10-27T09:35:24.806Z&quot;,
+      &quot;durationMs&quot;: 0,
+      &quot;detail&quot;: {
+        &quot;requests&quot;: [
+          &quot;https://els-audit.invalid/&quot;,
+          &quot;https://els-audit.invalid/&quot;,
+          &quot;https://els-audit.invalid/&quot;,
+          &quot;https://els-audit.invalid/&quot;,
+          &quot;file:///els-0.6.14.html&quot;
+        ],
+        &quot;blockedByCsp&quot;: []
+      }
+    },
+    {
+      &quot;id&quot;: &quot;OFFLINE-01&quot;,
+      &quot;title&quot;: &quot;Deschidere file:// și import fără rețea&quot;,
+      &quot;method&quot;: &quot;Același HTML deschis local în context cu rețeaua oprită.&quot;,
+      &quot;status&quot;: &quot;PASS&quot;,
+      &quot;detail&quot;: &quot;Import valid acceptat.&quot;
+    }
+  ],
+  &quot;runnerSha256&quot;: &quot;f2c5fa0eccacddc343ec2801f8f76ba34a0347a60afd1d6059eff1be1ea86a68&quot;
+}</pre></details></section>
+<script id="audit-evidence" type="application/json">{"schema":1,"artifact":"els-0.6.14.html","version":"0.6.14","sha256":"41c85aa2ca20fc1e2f3f77cef707725095410eb9e2a40e667cda676cf5e5b80b","started":"2026-10-27T09:33:03.087Z","finished":"2026-10-27T09:35:27.347Z","environment":{"node":"v24.21.0","chromium":"156.0.8078.4","platform":"win32"},"scope":"Evaluarea documentului HTML ELS, a codului JavaScript și CSS încorporat și a procesării modelului de diagramă în browser.","inventory":{"sinks":[{"script":2,"line":3105,"sink":"innerHTML","valueType":"StringLiteral"},{"script":2,"line":8560,"sink":"innerHTML","valueType":"TemplateLiteral"},{"script":2,"line":8664,"sink":"innerHTML","valueType":"TemplateLiteral"}],"calls":[{"script":1,"line":14,"name":"EventSource"}],"css":{"octeti":47766,"blocuri":1},"deepHierarchy":{"accepted":false,"durationMs":617,"count":2,"persisted":0}},"errors":[],"results":[{"id":"SRC-01","title":"JavaScript integrat valid sintactic","method":"Compilare fără execuție a fiecărui script din HTML cu vm.Script.","status":"PASS","at":"2026-10-27T09:33:12.002Z","durationMs":22,"detail":{"scripturi":2,"octetiHtml":517916}},{"id":"SRC-02","title":"CSP înaintea scripturilor și hash-uri exacte","method":"Recalculare SHA-256 pe scripturile normalizate LF; interzicere unsafe-eval și unsafe-inline în script-src.","status":"PASS","at":"2026-10-27T09:33:14.153Z","durationMs":4,"detail":"default-src 'none'; script-src 'sha256-T/MsE8LeLSu6DvyxGOjlqov/XbK7VuBUbu1/lplDCts=' 'sha256-35RaRdXrHD82qqlISpXaQd/hcfuhCCjjH4MIg9dKfRc='; style-src 'unsafe-inline'; img-src blob: data:; connect-src http://127.0.0.1:8765 http://localhost:8765; base-uri 'none'; form-action 'none'; object-src 'none'"},{"id":"SRC-03","title":"Inventar al suprafețelor JavaScript periculoase","method":"Parcurgere AST a tuturor scripturilor din HTML; inventar de apeluri și atribuiri DOM, cu linii relative scriptului.","status":"PASS","at":"2026-10-27T09:33:16.193Z","durationMs":527,"detail":{"sinks":[{"script":2,"line":3105,"sink":"innerHTML","valueType":"StringLiteral"},{"script":2,"line":8560,"sink":"innerHTML","valueType":"TemplateLiteral"},{"script":2,"line":8664,"sink":"innerHTML","valueType":"TemplateLiteral"}],"calls":[{"script":1,"line":14,"name":"EventSource"}],"css":{"octeti":47766,"blocuri":1},"deepHierarchy":{"accepted":false,"durationMs":617,"count":2,"persisted":0}}},{"id":"SRC-04","title":"HTML fără încărcări sau evenimente active ascunse","method":"Inspecție a marcajului, separat de scripturi: src, iframe, obiecte, atribute on*, refresh și formulare.","status":"PASS","at":"2026-10-27T09:33:18.748Z","durationMs":1,"detail":""},{"id":"CSS-01","title":"CSS fără importuri, URL-uri sau mecanisme active","method":"Extragere exclusiv a blocurilor style ale HTML-ului, eliminare comentarii și verificare @import/url/expression/behavior.","status":"PASS","at":"2026-10-27T09:33:20.779Z","durationMs":3,"detail":{"octeti":47766,"blocuri":1}},{"id":"VAL-01","title":"ID duplicat","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:22.920Z","durationMs":56,"detail":""},{"id":"VAL-02","title":"ID cu atribut HTML","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:25.113Z","durationMs":26,"detail":""},{"id":"VAL-03","title":"Coordonată null","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:27.168Z","durationMs":32,"detail":""},{"id":"VAL-04","title":"Coordonată infinită reprezentată textual","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:29.276Z","durationMs":21,"detail":""},{"id":"VAL-05","title":"Dimensiune negativă","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:31.311Z","durationMs":23,"detail":""},{"id":"VAL-06","title":"Dimensiune excesivă","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:33.354Z","durationMs":28,"detail":""},{"id":"VAL-07","title":"Etichetă obiect","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:35.413Z","durationMs":21,"detail":""},{"id":"VAL-08","title":"Etichetă prea lungă","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:37.585Z","durationMs":21,"detail":""},{"id":"VAL-09","title":"Porturi excesive","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:39.628Z","durationMs":25,"detail":""},{"id":"VAL-10","title":"Porturi negative","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:41.793Z","durationMs":20,"detail":""},{"id":"VAL-11","title":"Latură necunoscută","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:43.837Z","durationMs":17,"detail":""},{"id":"VAL-12","title":"Poziție port textuală","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:45.879Z","durationMs":27,"detail":""},{"id":"VAL-13","title":"Referință inexistentă","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:47.924Z","durationMs":18,"detail":""},{"id":"VAL-14","title":"Linie duplicată","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:49.976Z","durationMs":25,"detail":""},{"id":"VAL-15","title":"Prea multe puncte","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:52.120Z","durationMs":20,"detail":""},{"id":"VAL-16","title":"Punct corupt","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:54.284Z","durationMs":19,"detail":""},{"id":"VAL-17","title":"Săgeată necunoscută","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:56.324Z","durationMs":20,"detail":""},{"id":"VAL-18","title":"Stil linie necunoscut","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:33:58.377Z","durationMs":17,"detail":""},{"id":"VAL-19","title":"Tip nod necunoscut","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:34:00.537Z","durationMs":24,"detail":""},{"id":"VAL-20","title":"Grilă nulă","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:34:02.608Z","durationMs":21,"detail":""},{"id":"VAL-21","title":"Versiune necunoscută","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:34:04.649Z","durationMs":20,"detail":""},{"id":"VAL-22","title":"Contor nesigur","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:34:06.796Z","durationMs":19,"detail":""},{"id":"VAL-23","title":"ID numeric nesigur","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:34:08.971Z","durationMs":20,"detail":""},{"id":"VAL-24","title":"Ancoră text coruptă","method":"Import real File cu o singură mutație; refuz și comparație exactă a modelului anterior.","status":"PASS","at":"2026-10-27T09:34:11.136Z","durationMs":23,"detail":""},{"id":"LIMIT-03","title":"Limite globale de noduri, linii și porturi","method":"Modele peste 5.000 noduri, 20.000 linii și 20.000 porturi; toate trebuie respinse înainte de înlocuire.","status":"PASS","at":"2026-10-27T09:34:13.246Z","durationMs":207,"detail":""},{"id":"HIER-01","title":"Cicluri și părinți inexistenți normalizați","method":"Ciclu între două noduri, apoi părinte absent; randare fără ciclu în modelul rezultat.","status":"PASS","at":"2026-10-27T09:34:15.504Z","durationMs":37,"detail":""},{"id":"VALID-01","title":"Date valide la limite: text și 64 puncte","method":"Etichetă de 10.000 caractere, 64 puncte și capete libere; acceptarea limitei fără erori de randare.","status":"PASS","at":"2026-10-27T09:34:17.668Z","durationMs":118,"detail":""},{"id":"INJ-C0","title":"Injecție CSS în culoare 1","method":"Import culoare ostilă în fill, stroke, textColor, color și labelColor.","status":"PASS","at":"2026-10-27T09:34:19.961Z","durationMs":68,"detail":""},{"id":"INJ-C1","title":"Injecție CSS în culoare 2","method":"Import culoare ostilă în fill, stroke, textColor, color și labelColor.","status":"PASS","at":"2026-10-27T09:34:22.303Z","durationMs":69,"detail":""},{"id":"INJ-C2","title":"Injecție CSS în culoare 3","method":"Import culoare ostilă în fill, stroke, textColor, color și labelColor.","status":"PASS","at":"2026-10-27T09:34:24.406Z","durationMs":53,"detail":""},{"id":"INJ-C3","title":"Injecție CSS în culoare 4","method":"Import culoare ostilă în fill, stroke, textColor, color și labelColor.","status":"PASS","at":"2026-10-27T09:34:26.497Z","durationMs":52,"detail":""},{"id":"PROTO-__proto__","title":"Cheie rezervată __proto__","method":"Cheia este transmisă în JSON textual, fără normalizare prin transportul browserului.","status":"PASS","at":"2026-10-27T09:34:28.652Z","durationMs":68,"detail":""},{"id":"PROTO-constructor","title":"Cheie rezervată constructor","method":"Cheia este transmisă în JSON textual, fără normalizare prin transportul browserului.","status":"PASS","at":"2026-10-27T09:34:30.899Z","durationMs":33,"detail":""},{"id":"PROTO-prototype","title":"Cheie rezervată prototype","method":"Cheia este transmisă în JSON textual, fără normalizare prin transportul browserului.","status":"PASS","at":"2026-10-27T09:34:33.164Z","durationMs":32,"detail":""},{"id":"LIMIT-01","title":"Fișier peste 10 MiB refuzat înainte de citire","method":"Obiect File sintetic cu text() care aruncă excepție dacă este citit.","status":"PASS","at":"2026-10-27T09:34:35.248Z","durationMs":23,"detail":""},{"id":"LIMIT-02","title":"JSON invalid și metadate profund imbricate","method":"JSON trunchiat și lanț de 40 obiecte metadata; comparație cu modelul anterior.","status":"PASS","at":"2026-10-27T09:34:37.334Z","durationMs":30,"detail":""},{"id":"XSS-01","title":"Texte ostile în noduri și linii","method":"Payload-uri HTML, SVG, închidere script și entități importate ca etichete; inspecție DOM și marker de execuție.","status":"PASS","at":"2026-10-27T09:34:39.424Z","durationMs":131,"detail":{"payloaduri":5}},{"id":"CLIP-01","title":"Clipboard JSON ostil fără execuție","method":"Eveniment paste real DOM cu DataTransfer; etichetă ostilă, apoi date cu prototip.","status":"PASS","at":"2026-10-27T09:34:41.635Z","durationMs":88,"detail":""},{"id":"EXP-01","title":"SVG exportat: text inofensiv și fără resurse externe","method":"Export real, parsare XML în browser; interzicere script, foreignObject, evenimente și URL-uri de resurse.","status":"PASS","at":"2026-10-27T09:34:43.783Z","durationMs":1242,"detail":{"octeti":1823,"sha256":"75fa24668a6c025c454507b98b557b1f084775ef65b1d9dc1dba8066eec05254"}},{"id":"EXP-02","title":"JSON exportat și reimportat fără pierdere de model","method":"Descărcare reală ELS, parsare JSON și reimport, comparație nodes/edges.","status":"PASS","at":"2026-10-27T09:34:47.061Z","durationMs":256,"detail":""},{"id":"EXP-03","title":"PNG și JPG valide la export","method":"Descărcări reale la 100%; verificare semnături și decodare imagine în browser.","status":"PASS","at":"2026-10-27T09:34:49.429Z","durationMs":1618,"detail":""},{"id":"CSP-01","title":"Blocarea scripturilor injectate","method":"Adăugare script inline fără hash și atribut onerror; evenimente securitypolicyviolation înregistrate.","status":"PASS","at":"2026-10-27T09:34:53.114Z","durationMs":62,"detail":""},{"id":"CSP-02","title":"Blocarea resurselor externe prin CSP","method":"Încercări controlate de imagine și conexiune externă; verificare încălcare img-src și connect-src.","status":"PASS","at":"2026-10-27T09:34:55.235Z","durationMs":106,"detail":[{"directive":"connect-src","blockedURI":"https://blocked-audit.invalid/data"},{"directive":"img-src","blockedURI":"https://blocked-audit.invalid/x.png"}]},{"id":"CSS-02","title":"Foi de stil parsate și geometrie funcțională","method":"CSSOM, stil calculat și coordonate după import; comparație model înainte și după zoom.","status":"PASS","at":"2026-10-27T09:34:57.387Z","durationMs":27,"detail":{"rules":329,"position":"absolute","nodes":[[80,80],[80,300]]}},{"id":"EXP-04","title":"Export raster excesiv refuzat înainte de alocarea canvas","method":"Model sintetic cu lățime de 100.000 px; instrumentare temporară a createElement și monitorizare download.","status":"PASS","at":"2026-10-27T09:34:59.487Z","durationMs":124,"detail":""},{"id":"STORE-01","title":"Persistență locală și reîncărcare","method":"Import valid, așteptare salvare și reload; comparație model în context izolat.","status":"PASS","at":"2026-10-27T09:35:01.701Z","durationMs":729,"detail":""},{"id":"STORE-02","title":"Stocare coruptă nu execută marcaj HTML","method":"Înlocuirea exclusiv a diagramei sintetice active cu JSON invalid; reload și verificare marker.","status":"PASS","at":"2026-10-27T09:35:04.478Z","durationMs":295,"detail":""},{"id":"STORE-03","title":"Numele ostile din catalog sunt afișate ca text","method":"Catalog sintetic cu etichetă img/onerror și intrări nevalide; reload și inspecție DOM.","status":"PASS","at":"2026-10-27T09:35:06.824Z","durationMs":959,"detail":""},{"id":"STORE-04","title":"Refuzul scrierii în storage nu pierde modelul în memorie","method":"Simulare QuotaExceededError numai în contextul sintetic; verificare toast și export JSON de recuperare.","status":"PASS","at":"2026-10-27T09:35:10.266Z","durationMs":928,"detail":""},{"id":"CAP-01","title":"Lanț de 5.000 noduri: refuz atomic și persistență","method":"Lanț sintetic valid structural, la limita declarată. Dacă importul refuză, modelul și salvarea trebuie să păstreze baza.","status":"PASS","at":"2026-10-27T09:35:13.361Z","durationMs":1127,"detail":{"accepted":false,"durationMs":617,"count":2,"persisted":0}},{"id":"CAP-02","title":"Ierarhie de 64 niveluri acceptată, 65 respinsă","method":"Probe de ambele părți ale limitei; refuzul păstrează modelul acceptat anterior.","status":"PASS","at":"2026-10-27T09:35:16.533Z","durationMs":69,"detail":""},{"id":"TX-01","title":"Eroare de randare: restaurare model, grilă, vedere, selecție și salvare","method":"Defect DOM temporar provocat după validare într-un import cu altă grilă și vedere; restaurare și verificare după salvarea amânată.","status":"PASS","at":"2026-10-27T09:35:19.002Z","durationMs":1045,"detail":"Eroare injectată o singură dată; modelul, grila, vederea, selecția, salvarea și Undo sunt păstrate."},{"id":"CAP-03","title":"Clipboard refuză ierarhia excesivă înainte de inserare","method":"Eveniment paste cu 65 niveluri; verificare model neschimbat.","status":"PASS","at":"2026-10-27T09:35:22.724Z","durationMs":27,"detail":""},{"id":"NET-01","title":"Nicio transmisie externă în scenariile testate","method":"Toate cererile din context sunt inventariate; cele externe sunt oprite înainte să părăsească browserul.","status":"PASS","at":"2026-10-27T09:35:24.806Z","durationMs":0,"detail":{"requests":["https://els-audit.invalid/","https://els-audit.invalid/","https://els-audit.invalid/","https://els-audit.invalid/","file:///els-0.6.14.html"],"blockedByCsp":[]}},{"id":"OFFLINE-01","title":"Deschidere file:// și import fără rețea","method":"Același HTML deschis local în context cu rețeaua oprită.","status":"PASS","detail":"Import valid acceptat."}],"runnerSha256":"f2c5fa0eccacddc343ec2801f8f76ba34a0347a60afd1d6059eff1be1ea86a68"}</script>
+</main></body></html>

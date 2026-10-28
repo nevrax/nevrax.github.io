@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ELS 0.6.14 — Manual</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #202b3a; background: #f3f5f8; line-height: 1.65; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    main { max-width: 1080px; margin: auto; padding: clamp(20px, 4vw, 56px); background: white; }
+    nav { display: flex; flex-wrap: wrap; gap: 12px 24px; padding-bottom: 24px; border-bottom: 1px solid #dce2ea; }
+    a { color: #165bb5; text-underline-offset: 3px; overflow-wrap: anywhere; }
+    h1, h2, h3 { line-height: 1.25; color: #142b48; }
+    h1 { font-size: clamp(1.9rem, 5vw, 2.7rem); }
+    h2 { margin-top: 2.5em; padding-bottom: 10px; border-bottom: 1px solid #dce2ea; }
+    h3 { margin-top: 1.8em; }
+    img { display: block; max-width: 100%; height: auto; margin: 24px auto; border: 1px solid #dce2ea; border-radius: 8px; }
+    table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; margin: 24px 0; }
+    th, td { border: 1px solid #dce2ea; text-align: left; padding: 10px 14px; }
+    th { background: #edf2f8; }
+    pre { padding: 20px; overflow-x: auto; background: #eff3f8; border-radius: 8px; line-height: 1.5; }
+    code { font-family: ui-monospace, monospace; font-size: .9em; }
+    :not(pre) > code { background: #eff3f8; padding: 2px 5px; border-radius: 4px; }
+    blockquote { margin: 24px 0; padding: 8px 24px; border-left: 4px solid #165bb5; background: #f3f7fc; }
+    li { margin: 6px 0; }
+    details { padding: 16px; border: 1px solid #dce2ea; border-radius: 8px; }
+    summary { cursor: pointer; font-weight: 600; }
+    @media print { :root { background: white; } main { max-width: none; padding: 0; } nav { display: none; } }
+  </style>
+</head>
+<body>
+<main>
+  <nav aria-label="ELS"><a href="els-0.6.14.html">Editor ELS 0.6.14</a><a href="els-0.6.14-audit-securitate.html">Audit de securitate</a></nav>
+<h1 id="els-editorul-lui-sergiu">ELS - Editorul lui Sergiu</h1>
+<p><strong>Geometrie comună pentru noduri și porturi. Structuri care se mută împreună. Proprietăți sincronizate între componente.</strong></p>
+<p>ELS este un editor de diagrame de infrastructură într-un singur fișier HTML. Pozițiile, dimensiunile și porturile pot folosi aceeași grilă; nodurile se pot alinia și distribui, porturile se pot muta separat sau alinia la alte componente, iar grupurile sincronizate pot păstra aceleași proprietăți în zone diferite ale schemei.</p>
+<p><img loading="lazy" alt="Editorul ELS, cu bara pe iconițe și o diagramă de servicii, rețele și porturi" src="images/editor-diagrama.png" /></p>
+<p><a href="els-0.6.14.html">Editorul HTML</a> · <a href="demo.els.json">Exemplu editabil</a> · <a href="els-0.6.14-audit-securitate.html">Audit de securitate</a></p>
+<h2 id="ce-poti-coordona-in-aceeasi-diagrama">Ce poți coordona în aceeași diagramă</h2>
+<table>
+<thead>
+<tr>
+<th>Ce vrei să obții</th>
+<th>Instrumentul din ELS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Noduri, centre și porturi pe aceleași repere</td>
+<td><a href="#grila">Grilă geometrică comună</a></td>
+</tr>
+<tr>
+<td>Componente aliniate, cu dimensiuni și distanțe egale</td>
+<td><a href="#aliniere">Aliniere, egalizare și distribuire</a></td>
+</tr>
+<tr>
+<td>Legături directe fără deplasarea echipamentelor</td>
+<td><a href="#porturi">Mutarea portului și alinierea lui la un nod reper</a></td>
+</tr>
+<tr>
+<td>O structură întreagă mutată cu legăturile păstrate</td>
+<td><a href="#grupari">Containere și grupări ierarhice</a></td>
+</tr>
+<tr>
+<td>Aceleași proprietăți pe instanțe din zone diferite</td>
+<td><a href="#sincronizare">Noduri sincronizate și serii numerotate</a></td>
+</tr>
+<tr>
+<td>Editarea unei selecții și ca date, într-un alt program</td>
+<td><a href="#json">Copiere și lipire ca JSON</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="incearca-pe-o-diagrama-completa">Încearcă pe o diagramă completă</h2>
+<ol>
+<li>Descarcă <a href="els-0.6.14.html">HTML-ul editorului</a> și deschide-l în browser. Pe GitHub, folosește <strong>Download raw file</strong> din pagina fișierului.</li>
+<li>Apasă <strong>Exemplu</strong> pe planșa goală sau în <strong>Meniu → Despre ELS → Exemplu</strong>. Diagrama curentă este păstrată separat.</li>
+<li>Exemplul include prezentare, procesare, date, administrare și recuperare: <strong>43 de noduri, 79 de porturi și 34 de conexiuni</strong>. Atelierul din dreapta oferă obiecte pe care poți exersa.</li>
+</ol>
+<p>Imaginile de mai jos sunt detalii din editor, cu scene demonstrative dedicate fiecărei operații. Perechile înainte/după păstrează aceeași încadrare. Pentru a vedea detaliile la dimensiunea originală, deschide imaginea.</p>
+<p><a id="grila"></a></p>
+<h2 id="1-aceeasi-geometrie-pentru-noduri-dimensiuni-si-porturi">1. Aceeași geometrie pentru noduri, dimensiuni și porturi</h2>
+<p>Grila nu este doar un fundal cu puncte. Când fixarea este activă, editorul folosește aceeași celulă pentru pozițiile nodurilor, dimensiunile lor și pozițiile porturilor pe contur. Porturile centrale pot fi păstrate pe repere compatibile cu nodurile așezate deasupra, dedesubt sau lateral.</p>
+<h3 id="cum-lucrezi">Cum lucrezi</h3>
+<ol>
+<li>Deschide <strong>Meniu → Grilă și aliniere</strong>.</li>
+<li>Alege <strong>Mărimea celulei</strong> și activează <strong>Fixare pe grilă și ghidaje</strong>.</li>
+<li>Pentru o diagramă existentă, folosește <strong>Adaptează la grilă</strong> pe selecție sau pe întreaga diagramă.</li>
+<li>Adaugă ori mută nodurile și porturile pe această geometrie comună.</li>
+</ol>
+<p>La pasul implicit de 20, pozițiile unui nod sunt multipli de 20, iar dimensiunile nodurilor adaptate folosesc un număr par de celule. Astfel, și mijlocul unei laturi poate cădea pe grilă. Distanța implicită între porturile aceleiași laturi este de două celule; nodul crește dacă nu este suficient spațiu.</p>
+<p><strong>Exemplu:</strong> două noduri de aceeași lățime, așezate pe aceeași coloană, au porturile centrale N/S pe aceeași verticală. Conexiunea poate fi directă, fără reglarea individuală a unor coordonate fracționare.</p>
+<h3 id="ce-ramane-stabil">Ce rămâne stabil</h3>
+<ul>
+<li>Zoomul modifică vederea, nu coordonatele și pasul de fixare.</li>
+<li>La zoom mic se răresc punctele desenate; geometria de editare rămâne aceeași.</li>
+<li>Redimensionarea păstrează sloturile porturilor existente. Schimbarea <strong>numărului</strong> de porturi redistribuie porturile pe latura respectivă.</li>
+<li>Un generator poate calcula pozițiile în celule și poate importa diagrama deja aliniată.</li>
+</ul>
+<p><a href="https://github.com/nevrax/els-dev/blob/dac6500/docs/grid-geometry.md">Reguli geometrice și exemplu de fișier în celule</a></p>
+<h3 id="ghidaje-in-timpul-mutarii">Ghidaje în timpul mutării</h3>
+<p>La apropierea de un reper, editorul poate fixa nodul după margini, centre, porturi și distanțe egale între vecini. Porturile componentelor conectate au prioritate între reperele apropiate. Fixarea caută o poziție compatibilă cu grila activă.</p>
+<p><img loading="lazy" alt="Ghidaj în timpul tragerii: nodul se deplasează pe verticală, păstrând axa porturilor conectate" src="images/grila-ghidaj.png" /></p>
+<p>În această demonstrație, cursorul este deplasat puțin lateral în timp ce nodul coboară. Nodul rămâne pe axa portului conectat, iar ghidajul marchează reperul. Ghidajele dispar după eliberarea tragerii; coordonatele rămân pe grilă.</p>
+<p><a id="aliniere"></a></p>
+<h2 id="2-aliniere-distribuire-si-dimensiuni-egale-pentru-noduri">2. Aliniere, distribuire și dimensiuni egale pentru noduri</h2>
+<p>Poți coordona separat trei lucruri: <strong>poziția</strong>, <strong>dimensiunea</strong> și <strong>spațiul dintre obiecte</strong>. Comenzile funcționează și pentru containere; mutarea unui container prin aliniere deplasează și copiii lui.</p>
+<h3 id="exemplu-complet-trei-instante-asezate-uniform">Exemplu complet: trei instanțe așezate uniform</h3>
+<p><strong>Înainte:</strong> nodurile au înălțimi, lățimi și poziții verticale diferite.</p>
+<p><img loading="lazy" alt="Înainte de aliniere: trei noduri selectate, cu dimensiuni și poziții diferite" src="images/noduri-inainte.png" /></p>
+<ol>
+<li>Selectează primul nod, apoi adaugă celelalte două cu <strong>Shift+clic</strong>.</li>
+<li>Deschide <strong>Aliniere (☷)</strong> și alege <strong>Aliniază sus</strong>.</li>
+<li>Alege <strong>Aceeași mărime</strong> pentru a uniformiza lățimea și înălțimea.</li>
+<li>Alege <strong>Distribuie egal pe orizontală</strong> pentru spații egale între componente.</li>
+</ol>
+<p><strong>După:</strong> aceeași margine superioară, aceleași dimensiuni și spații egale, pe grila activă.</p>
+<p><img loading="lazy" alt="După aliniere, egalizare și distribuire: cele trei noduri au aceeași formă și spațiere" src="images/noduri-dupa.png" /></p>
+<h3 id="ce-face-fiecare-comanda">Ce face fiecare comandă</h3>
+<table>
+<thead>
+<tr>
+<th>Comandă</th>
+<th>Rezultat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stânga / dreapta / sus / jos</td>
+<td>Aliniază marginile nodurilor</td>
+</tr>
+<tr>
+<td>Centrează orizontal</td>
+<td>Aduce centrele pe aceeași coordonată X</td>
+</tr>
+<tr>
+<td>Centrează vertical</td>
+<td>Aduce centrele pe aceeași coordonată Y</td>
+</tr>
+<tr>
+<td>Distribuie egal pe orizontală / verticală</td>
+<td>Egalizează spațiile libere dintre cel puțin trei noduri</td>
+</tr>
+<tr>
+<td>Aceeași lățime / înălțime / mărime</td>
+<td>Folosește dimensiunea maximă corespunzătoare din selecție, adaptată grilei</td>
+</tr>
+</tbody>
+</table>
+<p>Marginile și centrele de aliniere se calculează din limitele întregii selecții. Distribuirea egalizează spațiul dintre contururi, ceea ce este util și când componentele au lățimi diferite. Pozițiile rezultate respectă grila dacă fixarea este activă.</p>
+<p><strong>Pentru o listă verticală:</strong> selectează elementele, aliniază-le la stânga și distribuie-le vertical. Poți uniformiza numai lățimea, păstrând înălțimile necesare conținutului.</p>
+<p><a id="porturi"></a></p>
+<h2 id="3-porturi-mobile-selectabile-si-aliniate-la-repere">3. Porturi mobile, selectabile și aliniate la repere</h2>
+<p>Portul este un punct de conectare al nodului, cu identitate proprie, de exemplu <code>S2</code>. Poți schimba <strong>poziția portului</strong> fără să muți nodul, să-i schimbi dimensiunea sau să refaci conexiunea.</p>
+<h3 id="31-muta-un-port-pentru-o-conexiune-directa">3.1. Mută un port pentru o conexiune directă</h3>
+<p><strong>Înainte:</strong> portul S2 este decalat față de instanța B, iar legătura are un traseu lateral.</p>
+<p><img loading="lazy" alt="Înainte: portul S2 nu este pe verticala instanței B" src="images/port-mutare-inainte.png" /></p>
+<ol>
+<li>Selectează nodul care deține portul.</li>
+<li>Activează <strong>Mută porturi</strong> din bara selecției.</li>
+<li>Trage portul pe latura lui. Cu grila activă, poziția se fixează pe celule.</li>
+<li>Eliberează portul în dreptul componentei conectate.</li>
+</ol>
+<p><strong>După:</strong> S2 este pe verticala instanței B. Nodurile au rămas la aceleași coordonate și dimensiuni, iar conexiunea folosește în continuare S2.</p>
+<p><img loading="lazy" alt="După: același port S2 este mutat, iar conexiunea către instanța B este verticală" src="images/port-mutare-dupa.png" /></p>
+<p>La nodurile nerotite, porturile <strong>N/S</strong> se deplasează de-a lungul laturii pe orizontală; <strong>E/W</strong>, pe verticală. Mutarea nu schimbă latura și nu redenumește portul. Numărul de porturi se ajustează separat, cu <strong>N / E / S / W</strong>. La rotirea nodului, porturile urmează conturul acestuia.</p>
+<h3 id="32-aliniaza-un-port-la-centrul-sau-marginea-altui-nod">3.2. Aliniază un port la centrul sau marginea altui nod</h3>
+<p>Poți folosi o componentă drept <strong>reper</strong> pentru poziția portului. Nu trebuie să estimezi manual unde se află centrul ei.</p>
+<ol>
+<li>Selectează nodul proprietar și activează <strong>Mută porturi</strong>.</li>
+<li>Folosește <strong>Shift+clic</strong> pe portul de aliniat.</li>
+<li>Folosește <strong>Shift+clic</strong> pe celălalt nod, ales ca reper.</li>
+<li>Verifică marcajele: <strong>PROPRIETAR PORT</strong>, portul evidențiat și <strong>REPER</strong> pe componenta de referință.</li>
+<li>Deschide <strong>Aliniere</strong> și alege direcția potrivită. Pentru un port N/S și centrul nodului reper, folosește <strong>Centrează orizontal</strong>.</li>
+</ol>
+<p><strong>Înainte:</strong> proprietarul și reperul sunt marcate, iar portul este decalat.</p>
+<p><img loading="lazy" alt="Port selectat pe proprietar și nod reper evidențiat separat, înainte de aliniere" src="images/port-reper-inainte.png" /></p>
+<p><strong>După:</strong> portul ajunge pe verticala centrului reperului. Nici proprietarul, nici reperul nu au fost mutate.</p>
+<p><img loading="lazy" alt="După aliniere: portul este pe aceeași verticală cu centrul nodului reper" src="images/port-reper-dupa.png" /></p>
+<p>Pentru porturile E/W, folosește alinierea pe coordonata Y. Sunt disponibile și marginile reperului, nu numai centrul. Cu mai multe noduri reper, ținta se calculează din limitele lor comune. Poziția trebuie să poată fi atinsă pe latura portului; editorul nu mută portul pe altă latură pentru a forța alinierea.</p>
+<h3 id="33-distribuie-uniform-porturile-selectate">3.3. Distribuie uniform porturile selectate</h3>
+<p>Poți egaliza distanțele dintre porturi fără să le ștergi și să le creezi din nou.</p>
+<ol>
+<li>În <strong>Mută porturi</strong>, selectează cu <strong>Shift+clic</strong> cel puțin trei porturi mobile pe aceeași axă.</li>
+<li>Deschide <strong>Aliniere</strong>.</li>
+<li>Alege distribuirea pe orizontală pentru N/S sau pe verticală pentru E/W.</li>
+</ol>
+<p><strong>Înainte:</strong> trei porturi selectate, cu spațieri diferite.</p>
+<p><img loading="lazy" alt="Porturi selectate și spațiate neuniform" src="images/port-distributie-inainte.png" /></p>
+<p><strong>După:</strong> intervale egale, pe grila activă.</p>
+<p><img loading="lazy" alt="Aceleași porturi, distribuite uniform pe latură" src="images/port-distributie-dupa.png" /></p>
+<p>Fără nod reper, distribuirea folosește intervalul dintre porturile extreme selectate. Cu repere selectate, folosește limitele acestora. Pentru porturi N/S nu alege o comandă de deplasare verticală: axa disponibilă este cea a laturii lor.</p>
+<p><a id="grupari"></a></p>
+<h2 id="4-containere-si-grupari-care-pastreaza-structura">4. Containere și grupări care păstrează structura</h2>
+<p>O grupare ierarhică are un părinte și copii. Poți construi o zonă cu rețele și mașini virtuale, apoi muta zona ca ansamblu. Conexiunile copiilor cu elementele din exterior continuă să le urmărească.</p>
+<h3 id="creeaza-si-muta-o-grupare">Creează și mută o grupare</h3>
+<ol>
+<li>Adaugă un chenar prin <strong>Grup</strong>, din bară, sau folosește un nod de tip <strong>Container</strong>.</li>
+<li>Selectează o componentă și trage-o în interior, astfel încât să încapă în container.</li>
+<li>Poți introduce și alte containere, pentru niveluri succesive.</li>
+<li>Selectează containerul pe o zonă liberă și mută-l. Copiii primesc aceeași deplasare.</li>
+</ol>
+<p><strong>Înainte:</strong> serviciul și rețeaua internă aparțin containerului; serviciul exterior este independent.</p>
+<p><img loading="lazy" alt="Container cu un serviciu și o rețea internă, conectat la un element exterior" src="images/container-inainte.png" /></p>
+<p><strong>După:</strong> containerul și copiii au fost deplasați împreună; elementul exterior a rămas fix, iar conexiunea s-a actualizat.</p>
+<p><img loading="lazy" alt="Containerul mutat împreună cu toți copiii, cu relațiile interne păstrate" src="images/container-dupa.png" /></p>
+<h3 id="selectarea-copiilor-si-spatiul-containerului">Selectarea copiilor și spațiul containerului</h3>
+<ul>
+<li>Clic pe un copil îl selectează separat; <strong>Shift+clic</strong> permite selecții multiple și între noduri înglobate.</li>
+<li>Dacă vrei să navighezi, trage peste un nod neselectat sau peste fundal: se deplasează vederea, fără pierderea selecției.</li>
+<li>Redimensionarea ține cont de spațiul necesar copiilor. Un container nu se restrânge arbitrar peste conținut.</li>
+<li>Alinierea unui container mută și descendenții lui. Poți alinia zone întregi fără reașezarea fiecărui copil.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Mecanism</th>
+<th>Ce leagă între obiecte</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Selecție multiplă</td>
+<td>Obiectele asupra cărora aplici operația curentă</td>
+</tr>
+<tr>
+<td>Container / chenar</td>
+<td>Apartenența și deplasarea unei structuri</td>
+</tr>
+<tr>
+<td>Grup sincronizat</td>
+<td>Proprietățile care se propagă între membri</td>
+</tr>
+</tbody>
+</table>
+<p><a id="sincronizare"></a></p>
+<h2 id="5-noduri-sincronizate-inclusiv-in-containere-diferite">5. Noduri sincronizate, inclusiv în containere diferite</h2>
+<p>Un grup sincronizat menține proprietăți comune între componente asociate explicit. Nu trebuie să fie una lângă alta sau în același container. Pozițiile și apartenența la containere pot rămâne independente.</p>
+<h3 id="creeaza-grupul-si-alege-ce-se-propaga">Creează grupul și alege ce se propagă</h3>
+<ol>
+<li>Selectează cel puțin două noduri fără grup sincronizat, folosind <strong>Shift+clic</strong>.</li>
+<li>În panoul selecției, deschide <strong>Noduri sincronizate</strong>.</li>
+<li>Dă un nume grupului și alege <strong>Același nume</strong> sau <strong>Serie numerotată</strong>.</li>
+<li>Bifează proprietățile comune și apasă <strong>Creează grup</strong>.</li>
+<li>Selectează un singur membru. Editorul evidențiază și ceilalți membri ai grupului.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Proprietate comună</th>
+<th>Ce înseamnă</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nume</td>
+<td>Denumire comună sau nume generate după seria grupului</td>
+</tr>
+<tr>
+<td>Lățime / înălțime</td>
+<td>Redimensionarea unui membru se propagă celorlalți</td>
+</tr>
+<tr>
+<td>Fundal / contur / culoare text</td>
+<td>Stilul bifat rămâne comun</td>
+</tr>
+<tr>
+<td>Proprietate nebifată</td>
+<td>Poate fi editată independent pe fiecare membru</td>
+</tr>
+</tbody>
+</table>
+<h3 id="exemplu-redimensionezi-o-instanta-si-se-actualizeaza-celelalte">Exemplu: redimensionezi o instanță și se actualizează celelalte</h3>
+<p><strong>Înainte:</strong> trei instanțe sincronizate sunt în trei containere diferite. Un singur membru este selectat, iar ceilalți sunt evidențiați.</p>
+<p><img loading="lazy" alt="Trei membri ai unui grup sincronizat, aflați în containere separate" src="images/sincronizare-inainte.png" /></p>
+<p>Trage mânerul din dreapta al primului nod, cu <strong>Lățime</strong> bifată în regulile grupului.</p>
+<p><strong>După:</strong> toate cele trei instanțe au noua lățime. Numele, identificatorii, coordonatele și containerele lor sunt păstrate.</p>
+<p><img loading="lazy" alt="Lățimea modificată pe un singur membru se propagă către toate instanțele grupului" src="images/sincronizare-dupa.png" /></p>
+<p>Modificarea propagată intră într-o singură operație Undo. <strong>Ctrl+Z</strong> readuce grupul la dimensiunea anterioară; <strong>Ctrl+Y</strong> reface operația.</p>
+<h3 id="serii-numerotate-fara-editarea-fiecarui-nume">Serii numerotate fără editarea fiecărui nume</h3>
+<p>Seria este formată din <strong>prefix + număr completat cu zerouri + sufix</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Configurare</th>
+<th>Nume rezultate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prefix <code>app-</code>, început 1, trei cifre</td>
+<td><code>app-001</code>, <code>app-002</code>, <code>app-003</code></td>
+</tr>
+<tr>
+<td>Prefix <code>worker-</code>, început 7, două cifre, sufix <code>-test</code></td>
+<td><code>worker-07-test</code>, <code>worker-08-test</code></td>
+</tr>
+<tr>
+<td>Același nume</td>
+<td>O denumire comună, fără contor</td>
+</tr>
+</tbody>
+</table>
+<p>Schimbarea regulilor păstrează numărul existent al fiecărui membru. Pentru a atribui din nou numerele, folosește explicit <strong>Previzualizează renumerotarea</strong>, verifică numele vechi și noi, apoi apasă <strong>Confirmă renumerotarea</strong>.</p>
+<p><img loading="lazy" alt="Previzualizarea numelor vechi și noi, înainte de confirmarea renumerotării" src="images/sincronizare-previzualizare.png" /></p>
+<p>În această previzualizare, numele din model nu s-au schimbat încă. Confirmarea aplică seria <code>svc-007</code>, <code>svc-008</code>, <code>svc-009</code> și poate fi anulată prin Undo.</p>
+<h3 id="vezi-membrii-desprinde-un-nod-sau-copiaza-grupul">Vezi membrii, desprinde un nod sau copiază grupul</h3>
+<p>Panoul arată numele grupului, numărul membrilor și lista lor. <strong>Arată membrii</strong> evidențiază grupul. <strong>Desprinde selecția</strong> oprește sincronizarea membrilor aleși, fără să renumeroteze automat ceilalți membri.</p>
+<p>La copiere și lipire, grupul copiat primește o identitate nouă și rămâne separat de original. Poți crea un al doilea set de instanțe și îi poți schimba regulile fără propagare în grupul din care a fost copiat.</p>
+<p><a id="json"></a></p>
+<h2 id="6-aceeasi-selectie-poate-fi-desen-si-date-json">6. Aceeași selecție poate fi desen și date JSON</h2>
+<p>Copierea din ELS produce text JSON cu nodurile selectate, copiii, porturile, proprietățile și conexiunile dintre elementele copiate. Poți edita acest text într-un alt program și îl poți lipi înapoi ca obiecte vizuale editabile.</p>
+<ol>
+<li>Selectează componentele și apasă <strong>Ctrl+C</strong>.</li>
+<li>În Notepad sau Visual Studio Code, apasă <strong>Ctrl+V</strong>: apare JSON ELS.</li>
+<li>Modifică nume, dimensiuni ori coordonate, păstrând identificatorii și referințele dintre elemente consecvente.</li>
+<li>Copiază întregul JSON rezultat și revino pe planșa ELS, în afara editării unui câmp de text.</li>
+<li>Apasă <strong>Ctrl+V</strong>. Nodurile și conexiunile sunt desenate automat, cu identificatori noi.</li>
+</ol>
+<p><strong>Exemplu practic:</strong> pregătești mai multe instanțe prin modificarea unui text, apoi continui vizual în editor. Un grup sincronizat copiat rămâne independent de original, iar ierarhia și relațiile din selecție se păstrează.</p>
+<h3 id="un-obiect-json-care-poate-fi-lipit-pe-plansa">Un obiect JSON care poate fi lipit pe planșă</h3>
+<p>Cele două noduri de mai jos au porturile centrale pe aceeași verticală:</p>
+<pre><code class="language-json">{
+  &quot;format&quot;: &quot;els&quot;,
+  &quot;version&quot;: 1,
+  &quot;geometry&quot;: { &quot;version&quot;: 1, &quot;cell&quot;: 20 },
+  &quot;nodes&quot;: [
+    {
+      &quot;id&quot;: &quot;a&quot;, &quot;label&quot;: &quot;Serviciu&quot;,
+      &quot;x&quot;: 160, &quot;y&quot;: 80, &quot;manualW&quot;: 200, &quot;manualH&quot;: 80,
+      &quot;ports&quot;: { &quot;S&quot;: 1 }
+    },
+    {
+      &quot;id&quot;: &quot;b&quot;, &quot;label&quot;: &quot;Date&quot;,
+      &quot;x&quot;: 160, &quot;y&quot;: 280, &quot;manualW&quot;: 200, &quot;manualH&quot;: 80,
+      &quot;ports&quot;: { &quot;N&quot;: 1 }
+    }
+  ],
+  &quot;edges&quot;: [
+    { &quot;id&quot;: &quot;ab&quot;, &quot;from&quot;: &quot;a&quot;, &quot;to&quot;: &quot;b&quot;, &quot;fromPort&quot;: &quot;S1&quot;, &quot;toPort&quot;: &quot;N1&quot; }
+  ]
+}
+</code></pre>
+<p>Lipirea <strong>adaugă</strong> în diagrama curentă. Importul unui fișier <strong>înlocuiește</strong> conținutul activ, după validare. Comenzile barei oferă și clipboard intern; accesul direct la clipboardul sistemului depinde de permisiunile browserului.</p>
+<p>Pentru generatoare care lucrează în celule și pentru API-ul local, consultă <a href="https://github.com/nevrax/els-dev/blob/dac6500/docs/grid-geometry.md">geometria</a> și <a href="https://github.com/nevrax/els-dev/blob/dac6500/scripts/README.md#api-local">documentația tehnică</a>.</p>
+<h2 id="7-trasee-si-etichete-editabile-fara-pierderea-legaturilor">7. Trasee și etichete editabile fără pierderea legăturilor</h2>
+<p>Conexiunile urmăresc nodurile și porturile. Pentru trasee impuse explicit poți introduce mai multe puncte manuale și poți reconecta capetele, păstrând punctele intermediare.</p>
+<p><img loading="lazy" alt="Coturi, capete și punctul activ, evidențiat cu portocaliu" src="images/conexiune-puncte.png" /></p>
+<ul>
+<li>Clic pe linie afișează capetele și coturile, inclusiv cele ale traseului automat.</li>
+<li><strong>Punct selectat</strong> permite alegerea din panou; punctul activ are marcaj persistent.</li>
+<li><strong>Adaugă punct</strong> sau dublu clic inserează un cot. Eliminarea unui punct intermediar păstrează conexiunea.</li>
+<li>Trage un capăt pentru a-l reconecta. <strong>Traseu automat</strong> renunță explicit la punctele manuale.</li>
+</ul>
+<p><img loading="lazy" alt="Panoul unei conexiuni: puncte selectabile, adăugare, eliminare și revenire la traseul automat" src="images/conexiune-panou.png" /></p>
+<p>Textul nodului și textul liniei au același tip de mâner pentru mutare. Etichetele rămân lângă obiectul lor, fără să deplaseze porturile ori traseul. Nodurile acceptă încadrare automată, rânduri manuale cu <strong>Shift+Enter</strong> și un singur rând. <strong>Text redus</strong> definește separat denumirea folosită la zoom mic, păstrând numele complet pentru editare.</p>
+<h2 id="lucru-local-fisiere-si-prezentare">Lucru local, fișiere și prezentare</h2>
+<p>ELS include codul, stilurile, simbolurile și exemplul în HTML. Funcționează fără instalarea editorului, fără cont, fără server obligatoriu și fără descărcarea unor biblioteci sau fonturi. Poate fi folosit fără internet, inclusiv într-o rețea izolată.</p>
+<blockquote>
+<p><strong>HTML-ul este editorul. ELS JSON este diagrama.</strong> Pentru transfer pe alt calculator, copiază ambele fișiere. Biblioteca browserului nu este încorporată în HTML.</p>
+</blockquote>
+<h3 id="salvare-si-copii-de-lucru">Salvare și copii de lucru</h3>
+<p><strong>Diagrame locale</strong> permite creare, schimbare, redenumire, ștergere și salvarea unei copii. Editările sunt salvate automat în browser. Pentru o variantă nouă, salvează mai întâi o copie; pentru păstrare în afara browserului, folosește <strong>Export ELS</strong>.</p>
+<p>Biblioteca aparține profilului browserului și adresei editorului. Alt browser sau altă adresă poate afișa o bibliotecă diferită. Ștergerea datelor browserului sau resetarea completă ELS poate elimina datele locale.</p>
+<h3 id="formate-de-export">Formate de export</h3>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Utilizare</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ELS JSON</td>
+<td>Diagrama editabilă: ierarhii, porturi, stiluri, puncte și grupuri sincronizate</td>
+</tr>
+<tr>
+<td>SVG</td>
+<td>Forme vectoriale pentru documente și imprimare</td>
+</tr>
+<tr>
+<td>PNG / JPG</td>
+<td>Imagini raster la scara aleasă</td>
+</tr>
+<tr>
+<td>Mermaid</td>
+<td>Noduri și relații descrise ca text, pentru documentație</td>
+</tr>
+</tbody>
+</table>
+<p>Scara imaginii exportate poate urma zoomul curent sau o valoare explicită, precum 100% ori 200%. Exporturile grafice includ textele, stilurile, porturile, punctele manuale și săgețile. Mermaid nu păstrează întreaga geometrie și toate proprietățile ELS; importul Mermaid și exporturile YAML/XML nu sunt disponibile.</p>
+<h3 id="zoom-si-prezentare">Zoom și prezentare</h3>
+<p>Rotița, comenzile <strong>- / +</strong>, revenirea la <strong>100%</strong> și încadrarea selecției sau a diagramei schimbă vederea, fără modificarea coordonatelor. Pe ecrane tactile poți folosi două degete. <strong>Prezentare</strong> ascunde bara, iar <strong>Escape</strong> revine la editor.</p>
+<details>
+<summary>Alte instrumente de editare și stilizare</summary><ul>
+<li><strong>Tipuri de nod:</strong> echipament general, mașină virtuală, firewall, segment de rețea și container, cu forme ori simboluri distincte.</li>
+<li><strong>Redimensionare și rotire:</strong> mânere de latură și colț; rotire în pași de +15° și -15°; revenire la postura implicită.</li>
+<li><strong>Aspect:</strong> fundal, contur și text configurabile separat; paletă, cod de culoare, transparență și resetare.</li>
+<li><strong>Stiluri de linie:</strong> continuu, întrerupt sau punctat; săgeți la început, la sfârșit, la ambele capete ori fără săgeți.</li>
+<li><strong>Bara de unelte:</strong> Iconițe sau Text, unelte activate selectiv, reordonare și grupuri configurabile. Resetarea revine la configurația implicită și zoom 100%.</li>
+</ul></details>
+
+<h2 id="comenzi-uzuale">Comenzi uzuale</h2>
+<table>
+<thead>
+<tr>
+<th>Gest sau comandă</th>
+<th>Efect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clic pe obiect</td>
+<td>Selectează nodul sau conexiunea</td>
+</tr>
+<tr>
+<td>Shift+clic pe nod</td>
+<td>Adaugă sau elimină nodul din selecție</td>
+</tr>
+<tr>
+<td>Shift+clic pe port, în Mută porturi</td>
+<td>Adaugă sau elimină portul din selecția de porturi</td>
+</tr>
+<tr>
+<td>Ctrl+A / Tot</td>
+<td>Selectează toate nodurile</td>
+</tr>
+<tr>
+<td>Tragere pe nod selectat</td>
+<td>Mută selecția</td>
+</tr>
+<tr>
+<td>Tragere pe fundal sau nod neselectat</td>
+<td>Deplasează vederea, păstrând selecția</td>
+</tr>
+<tr>
+<td>Dublu clic pe fundal</td>
+<td>Adaugă un nod</td>
+</tr>
+<tr>
+<td>Dublu clic pe etichetă / Text</td>
+<td>Editează textul</td>
+</tr>
+<tr>
+<td>Ctrl+C / Ctrl+V</td>
+<td>Copiază sau lipește JSON ELS</td>
+</tr>
+<tr>
+<td>Ctrl+Z / Ctrl+Y</td>
+<td>Anulează / reface, inclusiv modificările propagate</td>
+</tr>
+<tr>
+<td>Delete / Șterge</td>
+<td>Șterge selecția</td>
+</tr>
+<tr>
+<td>Escape în prezentare</td>
+<td>Revine la editor</td>
+</tr>
+</tbody>
+</table>
+<p>Comenzile de diagramă se aplică atunci când nu scrii într-un câmp de text.</p>
+<h2 id="date-si-securitate">Date și securitate</h2>
+<p>Importurile ELS JSON sunt validate înainte de aplicare. <a href="els-0.6.14-audit-securitate.html">Auditul de securitate pentru ELS 0.6.14</a> identifică prin SHA-256 exact HTML-ul evaluat și consemnează metodele, rezultatele și dovezile; nu este o certificare.</p>
+<p>Instalarea uneltelor, sursa, automatizarea și testele sunt descrise separat în <a href="https://github.com/nevrax/els-dev/blob/dac6500/scripts/README.md">ghidul de dezvoltare</a>.</p>
+</main>
+</body>
+</html>
