@@ -137,13 +137,18 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
     plot.style.userSelect = 'none';
     plot.style.webkitUserSelect = 'none';
     plot.style.cursor = 'grab';
+    let rotationFrame = 0;
+    const measuredNodes = new Map(), renderedLinks = new Map(), renderedNodes = new Map();
     function rotate(value) {
-      rotation = Math.round(value);
+      rotation = value;
       angleControl.min = Math.min(-360, rotation - 360);
       angleControl.max = Math.max(360, rotation + 360);
       angleControl.value = rotation;
-      root.querySelector('#original-degrees').textContent = rotation + '°';
-      draw();
+      root.querySelector('#original-degrees').textContent = Math.round(rotation) + '°';
+      if (!rotationFrame) rotationFrame = requestAnimationFrame(() => {
+        rotationFrame = 0;
+        draw(true);
+      });
     }
     angleControl.addEventListener('input', () => rotate(Number(angleControl.value)));
     root.querySelector('#original-left').addEventListener('click', () => rotate(rotation - 15));
@@ -230,7 +235,8 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
       const factor=Math.min((rect.width/2+padding)/Math.max(Math.abs(dx),.001),(rect.height/2+padding)/Math.max(Math.abs(dy),.001));
       return {x:rect.cx+dx*factor,y:rect.cy+dy*factor};
     }
-    function draw() {
+    function draw(rotationOnly = false) {
+      rotationOnly = rotationOnly === true && measuredNodes.size === persons.size;
       const width = Math.max(300,plot.clientWidth);
       const narrow = width < 480;
       const height = Math.max(340, Math.min(610, window.innerHeight - 225));
@@ -253,7 +259,10 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
       svg.setAttribute('viewBox','0 0 '+width+' '+height);
       const nodeWidth=narrow?116:Math.min(154,width*.24);
       for (const [id,el] of persons) {
-        el.style.left=centers[id][0]+'px';el.style.top=centers[id][1]+'px';el.style.width=nodeWidth+'px';
+        el.style.left='0';el.style.top='0';
+        el.style.transform='translate3d('+centers[id][0]+'px,'+centers[id][1]+'px,0) translate(-50%,-50%)';
+        if (rotationOnly) continue;
+        el.style.width=nodeWidth+'px';
         const roles=[];
         if(focused) for(const fact of facts) {
           if(fact.from===fact.to&&fact.from===focused&&id===focused)roles.push(fact.role);
@@ -263,11 +272,14 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
         el.querySelector('.person-roles').textContent=[...new Set(roles)].join(' · ');
         el.querySelector('.person-name').style.textDecoration=focused===id?'underline':'none';
       }
-      const plotRect=plot.getBoundingClientRect(),rectangles={};
+      const rectangles={};
       for(const [id,el] of persons){
-        const r=el.getBoundingClientRect();rectangles[id]={x:r.left-plotRect.left,y:r.top-plotRect.top,width:r.width,height:r.height,cx:centers[id][0],cy:centers[id][1]};
+        if (!rotationOnly) {
+          const r=el.getBoundingClientRect(); measuredNodes.set(id,{width:r.width,height:r.height});
+        }
+        const r=measuredNodes.get(id),cx=centers[id][0],cy=centers[id][1];
+        rectangles[id]={x:cx-r.width/2,y:cy-r.height/2,width:r.width,height:r.height,cx,cy};
       }
-      links.replaceChildren();backgrounds.replaceChildren();
       const pairCounts=new Map();
       for(const group of groups.values()){
         const pair=[group.from,group.to].sort().join('|');
@@ -293,18 +305,29 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
         }
         const related=!focused||group.from===focused||group.to===focused;
         const selected=activeEdge===group.id;
+        const existing=renderedLinks.get(group.id);
+        if(existing){
+          existing.path.setAttribute('d',d);
+          existing.hit.setAttribute('d',d);
+          if(!rotationOnly)existing.path.setAttribute('stroke-opacity',selected?1:(related?.86:.16));
+          continue;
+        }
         const link=element('a',{href:'#family-detail','aria-label':textFor(group),'data-tooltip':textFor(group),class:'cursor-interaction'});
         const path=element('path',{d,class:'family-link',stroke:kind.color,'stroke-opacity':selected?1:(related?.86:.16)});
         if(kind.dash)path.setAttribute('stroke-dasharray',kind.dash);
         if(group.kind==='blood')path.setAttribute('marker-end','url(#family-blood-arrow)');
         if(group.from===group.to)path.setAttribute('marker-end','url(#family-loop-arrow)');
-        link.append(path,element('path',{d,class:'family-hit'}));
+        const hit=element('path',{d,class:'family-hit'});
+        link.append(path,hit);
         link.addEventListener('click',event=>{event.preventDefault();activeEdge=group.id;detail.textContent=textFor(group);draw();save();});
         links.append(link);
+        renderedLinks.set(group.id,{path,hit});
       }
       for(const [id,rect] of Object.entries(rectangles)){
-        backgrounds.append(element('rect',{x:rect.x-3,y:rect.y-5,width:rect.width+6,height:rect.height+10,fill:'var(--background)'}));
-        backgrounds.append(element('circle',{cx:rect.cx,cy:rect.y-13,r:focused===id?5:3.5,fill:'var(--foreground)'}));
+        let nodes=renderedNodes.get(id);
+        if(!nodes){nodes={box:element('rect',{fill:'var(--background)'}),dot:element('circle',{fill:'var(--foreground)'})};backgrounds.append(nodes.box,nodes.dot);renderedNodes.set(id,nodes);}
+        for(const [key,value] of Object.entries({x:rect.x-3,y:rect.y-5,width:rect.width+6,height:rect.height+10}))nodes.box.setAttribute(key,value);
+        for(const [key,value] of Object.entries({cx:rect.cx,cy:rect.y-13,r:focused===id?5:3.5}))nodes.dot.setAttribute(key,value);
       }
       if(!activeEdge)detail.textContent=focused?names[focused]+' · rolurile celorlalte persoane sunt raportate la aceasta persoana.':'6 persoane · 6 legaturi biologice · 2 casatorii · relatii derivate';
     }
