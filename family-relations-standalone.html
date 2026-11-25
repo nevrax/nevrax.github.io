@@ -132,7 +132,9 @@
     let rotation = 0, use3d = true, gesture = null, dragged = false;
     const angleControl = root.querySelector('#original-angle');
     const modeControl = root.querySelector('#original-mode');
-    plot.style.touchAction = 'pan-y';
+    plot.style.touchAction = 'none';
+    plot.style.userSelect = 'none';
+    plot.style.webkitUserSelect = 'none';
     plot.style.cursor = 'grab';
     function rotate(value) {
       rotation = Math.round(((value + 540) % 360) - 180);
@@ -154,10 +156,12 @@
       draw();
     });
     plot.addEventListener('pointerdown', event => {
+      if (event.pointerType === 'touch') return;
       if (!use3d || event.button !== 0) return;
       gesture = {x:event.clientX, y:event.clientY, angle:rotation}; dragged = false;
     });
     plot.addEventListener('pointermove', event => {
+      if (event.pointerType === 'touch') return;
       if (!gesture) return;
       const dx = event.clientX - gesture.x;
       if (!dragged && Math.abs(dx) < 6) return;
@@ -170,6 +174,34 @@
     plot.addEventListener('pointerup', endRotation);
     plot.addEventListener('pointercancel', endRotation);
     plot.addEventListener('click', event => { if (dragged) { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
+    // Safari/iOS: handle the gesture on the stable plot, not SVG paths
+    // which are rebuilt while rotating. Prevent page scrolling in the plot.
+    let touchGesture = null;
+    plot.addEventListener('touchstart', event => {
+      if (!use3d || event.touches.length !== 1) return;
+      event.preventDefault();
+      const touch=event.touches[0];
+      touchGesture={x:touch.clientX,angle:rotation,moved:false,link:event.target.closest('a')};
+      dragged=false;
+    }, {passive:false});
+    plot.addEventListener('touchmove', event => {
+      if (!touchGesture || event.touches.length !== 1) return;
+      event.preventDefault();
+      const dx=event.touches[0].clientX-touchGesture.x;
+      if (Math.abs(dx)>3) touchGesture.moved=true;
+      if (touchGesture.moved) { dragged=true; rotate(touchGesture.angle+dx*.65); }
+    }, {passive:false});
+    plot.addEventListener('touchend', event => {
+      if (!touchGesture) return;
+      event.preventDefault();
+      const finished=touchGesture; touchGesture=null;
+      if (!finished.moved && finished.link) {
+        dragged=false;
+        finished.link.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
+      }
+      setTimeout(() => { dragged=false; },0);
+    }, {passive:false});
+    plot.addEventListener('touchcancel', () => { touchGesture=null; dragged=false; });
     const saved = window.openai?.widgetState;
     const restored=saved?.modelContent?.familyPerspective;
     if (restored==='' || names[restored]) focused=restored;
