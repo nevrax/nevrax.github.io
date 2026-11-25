@@ -240,7 +240,7 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
       rotationOnly = rotationOnly === true && measuredNodes.size === persons.size;
       const width = Math.max(300,plot.clientWidth);
       const narrow = width < 480;
-      const height = Math.max(300, Math.min(540, window.innerHeight - 175));
+      const height = Math.max(240, Math.min(540, window.innerHeight - 205));
       const space=FamilySpace.scene(width,height,rotation,use3d);
       const centers=Object.fromEntries(Object.entries(space.nodes).map(([id,p])=>[id,[p.x,p.y]]));
       plot.style.height=height+'px';
