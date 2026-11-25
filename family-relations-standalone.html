@@ -270,6 +270,27 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
         const size=measuredNodes.get(id),scale=space.nodes[id].scale,r={width:size.width*scale,height:size.height*scale},cx=centers[id][0],cy=centers[id][1];
         rectangles[id]={x:cx-r.width/2,y:cy-r.height/2,width:r.width,height:r.height,cx,cy};
       }
+      // Separate labels in screen space; their spatial points remain unchanged.
+      const labelIds=Object.keys(rectangles);
+      for(let pass=0;pass<12;pass++){
+        let changed=false;
+        for(let i=0;i<labelIds.length;i++)for(let j=i+1;j<labelIds.length;j++){
+          const a=rectangles[labelIds[i]],b=rectangles[labelIds[j]];
+          const overlapX=(a.width+b.width)/2+8-Math.abs(a.cx-b.cx);
+          const overlapY=(a.height+b.height)/2+8-Math.abs(a.cy-b.cy);
+          if(overlapX>0&&overlapY>0){
+            const direction=a.cy<=b.cy?-1:1,shift=overlapY/2+.1;
+            a.cy=Math.max(a.height/2+5,Math.min(height-a.height/2-5,a.cy+direction*shift));
+            b.cy=Math.max(b.height/2+5,Math.min(height-b.height/2-5,b.cy-direction*shift));
+            changed=true;
+          }
+        }
+        if(!changed)break;
+      }
+      for(const [id,rect] of Object.entries(rectangles)){
+        rect.x=rect.cx-rect.width/2;rect.y=rect.cy-rect.height/2;
+        persons.get(id).style.transform='translate3d('+rect.cx+'px,'+rect.cy+'px,0) translate(-50%,-50%) scale('+space.nodes[id].scale+')';
+      }
       const pairCounts=new Map();
       for(const group of groups.values()){
         const pair=[group.from,group.to].sort().join('|');
@@ -318,9 +339,11 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
       }
       for(const [id,rect] of Object.entries(rectangles)){
         let nodes=renderedNodes.get(id);
-        if(!nodes){nodes={box:element('rect',{fill:'var(--background)'}),dot:element('circle',{fill:'var(--foreground)'})};backgrounds.append(nodes.box,nodes.dot);renderedNodes.set(id,nodes);}
+        if(!nodes){nodes={leader:element('path',{fill:'none',stroke:'#aebfba','stroke-width':1}),box:element('rect',{fill:'var(--background)'}),dot:element('circle',{fill:'var(--foreground)'})};backgrounds.append(nodes.leader,nodes.box,nodes.dot);renderedNodes.set(id,nodes);}
         for(const [key,value] of Object.entries({x:rect.x-3,y:rect.y-5,width:rect.width+6,height:rect.height+10}))nodes.box.setAttribute(key,value);
-        for(const [key,value] of Object.entries({cx:rect.cx,cy:rect.y-13,r:focused===id?5:3.5}))nodes.dot.setAttribute(key,value);
+        const point=space.nodes[id],dotY=point.y-rect.height/2-13;
+        nodes.leader.setAttribute('d',Math.abs(rect.cy-point.y)>2?'M '+point.x+' '+dotY+' L '+rect.cx+' '+(rect.y-3):'');
+        for(const [key,value] of Object.entries({cx:point.x,cy:dotY,r:(focused===id?5:3.5)*point.scale}))nodes.dot.setAttribute(key,value);
       }
       if(!activeEdge)detail.textContent=focused?names[focused]+' · rolurile celorlalte persoane sunt raportate la aceasta persoana.':'6 persoane · 6 legaturi biologice · 2 casatorii · relatii derivate';
     }
