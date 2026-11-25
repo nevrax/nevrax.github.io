@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Legaturile familiei</title>
+<style>
+:root{--font-size-base:16px;--background:#fff;--foreground:#20343d;--muted-foreground:#536772;--viz-series-1:#187d75;--viz-series-2:#b96a28;--viz-series-3:#7b56a5;--viz-series-4:#ba4f70;color-scheme:light}
+*{box-sizing:border-box}body{margin:0;padding:24px 16px;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--background);color:var(--foreground)}main{max-width:960px;margin:auto}h2{margin:0;font-size:24px}.form-label{display:grid;gap:6px;max-width:280px}.form-select{padding:8px 10px;font:inherit;color:inherit;background:#fff;border:1px solid #b7c6d2;border-radius:6px;max-width:100%}.text-small{font-size:13px}.cursor-interaction{cursor:pointer}.family-person{font-size:14px}.person-roles{font-size:12px}.edge-detail{padding:8px 0}a:focus-visible{outline:2px solid #187d75;outline-offset:3px}
+@media(max-width:480px){body{padding:16px 12px}.family-person{font-size:13px}.person-roles{font-size:11px}}
+</style>
+</head><body><main>
+<div id="family-relations-20261124">
+  <style>
+    #family-relations-20261124 { display: grid; gap: calc(var(--font-size-base) * .75); }
+    #family-relations-20261124 .family-plot { position: relative; width: 100%; }
+    #family-relations-20261124 .family-graph { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    #family-relations-20261124 .family-person { position: absolute; transform: translate(-50%,-50%); text-align: center; pointer-events: none; }
+    #family-relations-20261124 .person-name { font-weight: 500; color: var(--foreground); }
+    #family-relations-20261124 .person-roles { color: var(--muted-foreground); margin-top: calc(var(--font-size-base) * .25); }
+    #family-relations-20261124 .person-roles:empty { display: none; }
+    #family-relations-20261124 .family-legend { display: flex; flex-wrap: wrap; gap: calc(var(--font-size-base) * .5) calc(var(--font-size-base) * 1.1); }
+    #family-relations-20261124 .legend-item { display: inline-flex; align-items: center; gap: calc(var(--font-size-base) * .4); }
+    #family-relations-20261124 .legend-item svg { width: 28px; height: 12px; flex: none; }
+    #family-relations-20261124 .family-link { fill: none; stroke-width: 1.6; vector-effect: non-scaling-stroke; }
+    #family-relations-20261124 .family-hit { fill: none; stroke: transparent; stroke-width: 14; pointer-events: stroke; }
+    #family-relations-20261124 .edge-detail { min-height: calc(var(--font-size-base) * 2); color: var(--foreground); }
+    #family-relations-20261124 .family-controls { padding-right: 92px; }
+    #family-relations-20261124 .person-dot { fill: var(--foreground); }
+    @media (prefers-reduced-motion: no-preference) {
+      #family-relations-20261124 .family-link { transition: stroke-opacity .16s; }
+    }
+  </style>
+  <h2>Legaturile familiei</h2>
+  <div class="viz-controls family-controls">
+    <label class="form-label">Perspectiva
+      <select class="form-select" id="family-perspective">
+        <option value="">Toate legaturile</option>
+        <option value="narrator">Povestitorul</option>
+        <option value="father">Tatal povestitorului</option>
+        <option value="widow">Vaduva</option>
+        <option value="daughter">Fiica vaduvei</option>
+        <option value="boy1">Primul baiat</option>
+        <option value="boy2">Al doilea baiat</option>
+      </select>
+    </label>
+  </div>
+  <div class="family-legend text-small" aria-label="Tipuri de legaturi">
+    <span class="legend-item"><svg aria-hidden="true"><line x1="0" y1="6" x2="25" y2="6" stroke="var(--viz-series-1)" stroke-width="2"/></svg>Parinte biologic → copil</span>
+    <span class="legend-item"><svg aria-hidden="true"><line x1="0" y1="6" x2="25" y2="6" stroke="var(--viz-series-2)" stroke-width="2" stroke-dasharray="6 4"/></svg>Casatorie</span>
+    <span class="legend-item"><svg aria-hidden="true"><line x1="0" y1="6" x2="25" y2="6" stroke="var(--viz-series-3)" stroke-width="2" stroke-dasharray="2 4"/></svg>Rudenie derivata</span>
+    <span class="legend-item"><svg aria-hidden="true"><line x1="0" y1="6" x2="25" y2="6" stroke="var(--viz-series-4)" stroke-width="2" stroke-dasharray="9 3 2 3"/></svg>Extindere din poanta</span>
+  </div>
+  <div class="family-plot" id="family-plot">
+    <svg class="family-graph" id="family-graph" role="group" aria-label="Sase persoane; filiatie, casatorii, relatii derivate si ciclul din poanta">
+      <title>Legaturile din Incurcaturi in familie</title>
+      <desc>Fiecare persoana apare o singura data. Legaturile biologice au sageti. Rudenia derivata si extinderile din poanta au stiluri distincte. Legaturile pot fi selectate pentru denumirea completa.</desc>
+      <defs>
+        <marker id="family-blood-arrow" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M1 1 L7 4.5 L1 8" fill="none" stroke="var(--viz-series-1)" stroke-width="1.4"/></marker>
+        <marker id="family-loop-arrow" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M1 1 L7 4.5 L1 8" fill="none" stroke="var(--viz-series-4)" stroke-width="1.4"/></marker>
+      </defs>
+      <g id="family-links"></g>
+      <g id="family-node-backgrounds" aria-hidden="true"></g>
+    </svg>
+    <div class="family-person" data-person="father"><div class="person-name">Tatal<br>povestitorului</div><div class="person-roles text-small"></div></div>
+    <div class="family-person" data-person="daughter"><div class="person-name">Fiica<br>vaduvei</div><div class="person-roles text-small"></div></div>
+    <div class="family-person" data-person="boy1"><div class="person-name">Primul baiat</div><div class="person-roles text-small"></div></div>
+    <div class="family-person" data-person="narrator"><div class="person-name">Povestitorul</div><div class="person-roles text-small"></div></div>
+    <div class="family-person" data-person="widow"><div class="person-name">Vaduva</div><div class="person-roles text-small"></div></div>
+    <div class="family-person" data-person="boy2"><div class="person-name">Al doilea baiat</div><div class="person-roles text-small"></div></div>
+  </div>
+  <div class="edge-detail text-small" id="family-detail" aria-live="polite">6 persoane · 6 legaturi biologice · 2 casatorii · relatii derivate</div>
+  <script>
+  (() => {
+    const root = document.getElementById('family-relations-20261124');
+    if (!root) return;
+    const svg = root.querySelector('#family-graph');
+    const plot = root.querySelector('#family-plot');
+    const links = root.querySelector('#family-links');
+    const backgrounds = root.querySelector('#family-node-backgrounds');
+    const select = root.querySelector('#family-perspective');
+    const detail = root.querySelector('#family-detail');
+    const names = {father:'Tatal povestitorului',daughter:'Fiica vaduvei',boy1:'Primul baiat',narrator:'Povestitorul',widow:'Vaduva',boy2:'Al doilea baiat'};
+    const kinds = {
+      blood:{color:'var(--viz-series-1)',dash:''},
+      marriage:{color:'var(--viz-series-2)',dash:'6 4'},
+      derived:{color:'var(--viz-series-3)',dash:'2 4'},
+      extended:{color:'var(--viz-series-4)',dash:'9 3 2 3'}
+    };
+    const facts = [
+      {from:'father',to:'narrator',kind:'blood',role:'tata biologic',inverse:'fiu biologic'},
+      {from:'widow',to:'daughter',kind:'blood',role:'mama biologica',inverse:'fiica biologica'},
+      {from:'father',to:'boy1',kind:'blood',role:'tata biologic',inverse:'fiu biologic'},
+      {from:'daughter',to:'boy1',kind:'blood',role:'mama biologica',inverse:'fiu biologic'},
+      {from:'narrator',to:'boy2',kind:'blood',role:'tata biologic',inverse:'fiu biologic'},
+      {from:'widow',to:'boy2',kind:'blood',role:'mama biologica',inverse:'fiu biologic'},
+      {from:'father',to:'daughter',kind:'marriage',role:'sot',inverse:'sotie'},
+      {from:'narrator',to:'widow',kind:'marriage',role:'sot',inverse:'sotie'},
+      {from:'narrator',to:'daughter',kind:'derived',role:'tata vitreg',inverse:'fiica vitrega'},
+      {from:'daughter',to:'narrator',kind:'derived',role:'mama vitrega',inverse:'fiu vitreg'},
+      {from:'widow',to:'father',kind:'derived',role:'soacra',inverse:'ginere'},
+      {from:'narrator',to:'father',kind:'derived',role:'socru vitreg',inverse:'ginere prin alianta'},
+      {from:'daughter',to:'widow',kind:'derived',role:'soacra prin relatia vitrega',inverse:'nora prin relatia vitrega'},
+      {from:'narrator',to:'boy1',kind:'derived',role:'frate pe jumatate',inverse:'frate pe jumatate'},
+      {from:'daughter',to:'boy2',kind:'derived',role:'sora pe jumatate',inverse:'frate pe jumatate'},
+      {from:'boy2',to:'father',kind:'derived',role:'cumnat',inverse:'cumnat'},
+      {from:'widow',to:'boy1',kind:'derived',role:'bunica biologica',inverse:'nepot biologic'},
+      {from:'father',to:'boy2',kind:'derived',role:'bunic biologic',inverse:'nepot biologic'},
+      {from:'narrator',to:'boy1',kind:'derived',role:'bunic vitreg',inverse:'nepot vitreg'},
+      {from:'daughter',to:'boy2',kind:'extended',role:'bunica vitrega, prin extindere',inverse:'nepot vitreg, prin extindere'},
+      {from:'widow',to:'narrator',kind:'extended',role:'bunica prin relatia vitrega',inverse:'nepot prin relatia vitrega'},
+      {from:'narrator',to:'narrator',kind:'extended',role:'propriul bunic, doar in poanta',inverse:'propriul nepot, doar in poanta'}
+    ];
+    const groups = new Map();
+    facts.forEach((fact,index) => {
+      fact.id = 'family-fact-' + index;
+      const pair = [fact.from,fact.to].sort().join('|');
+      const key = pair + '|' + fact.kind;
+      if (!groups.has(key)) groups.set(key,{id:key,kind:fact.kind,from:fact.from,to:fact.to,facts:[]});
+      groups.get(key).facts.push(fact);
+    });
+    const persons = new Map([...root.querySelectorAll('[data-person]')].map(el => [el.dataset.person,el]));
+    let focused = 'narrator', activeEdge = '';
+    const saved = window.openai?.widgetState;
+    const restored=saved?.modelContent?.familyPerspective;
+    if (restored==='' || names[restored]) focused=restored;
+    select.value = focused;
+    function save() {
+      const operation = window.openai?.setWidgetState?.({modelContent:{familyPerspective:focused,selectedRelationship:activeEdge},privateContent:null});
+      operation?.catch?.(() => {});
+    }
+    function textFor(group) {
+      return group.facts.map(f => {
+        if (f.from === f.to) return names[f.from] + ': ' + f.role + '.';
+        if (f.kind === 'marriage') return names[f.from] + ' si ' + names[f.to] + ': casatoriti.';
+        return names[f.from] + ' → ' + names[f.to] + ': ' + f.role + '.';
+      }).join(' ');
+    }
+    function element(tag,attrs={}) {
+      const el = document.createElementNS('http://www.w3.org/2000/svg',tag);
+      Object.entries(attrs).forEach(([key,value]) => el.setAttribute(key,String(value)));
+      return el;
+    }
+    function anchor(rect,other,padding=7) {
+      const dx=other.cx-rect.cx,dy=other.cy-rect.cy;
+      const factor=Math.min((rect.width/2+padding)/Math.max(Math.abs(dx),.001),(rect.height/2+padding)/Math.max(Math.abs(dy),.001));
+      return {x:rect.cx+dx*factor,y:rect.cy+dy*factor};
+    }
+    function draw() {
+      const width = Math.max(300,plot.clientWidth);
+      const narrow = width < 480;
+      const height = narrow ? 700 : 610;
+      const outer = narrow ? 66 : width*.18;
+      const right = width-outer, middle=width/2;
+      const upper = narrow ? 210 : 185, lower=narrow ? 465 : 405;
+      const centers={boy1:[middle,52],father:[outer,upper],daughter:[right,upper],narrator:[outer,lower],widow:[right,lower],boy2:[middle,height-60]};
+      plot.style.height=height+'px';
+      svg.setAttribute('viewBox','0 0 '+width+' '+height);
+      const nodeWidth=narrow?116:Math.min(154,width*.24);
+      for (const [id,el] of persons) {
+        el.style.left=centers[id][0]+'px';el.style.top=centers[id][1]+'px';el.style.width=nodeWidth+'px';
+        const roles=[];
+        if(focused) for(const fact of facts) {
+          if(fact.from===fact.to&&fact.from===focused&&id===focused)roles.push(fact.role);
+          else if(fact.from===focused&&fact.to===id)roles.push(fact.inverse);
+          else if(fact.to===focused&&fact.from===id)roles.push(fact.role);
+        }
+        el.querySelector('.person-roles').textContent=[...new Set(roles)].join(' · ');
+        el.querySelector('.person-name').style.textDecoration=focused===id?'underline':'none';
+      }
+      const plotRect=plot.getBoundingClientRect(),rectangles={};
+      for(const [id,el] of persons){
+        const r=el.getBoundingClientRect();rectangles[id]={x:r.left-plotRect.left,y:r.top-plotRect.top,width:r.width,height:r.height,cx:centers[id][0],cy:centers[id][1]};
+      }
+      links.replaceChildren();backgrounds.replaceChildren();
+      const pairCounts=new Map();
+      for(const group of groups.values()){
+        const pair=[group.from,group.to].sort().join('|');
+        if(!pairCounts.has(pair))pairCounts.set(pair,[]);pairCounts.get(pair).push(group.id);
+      }
+      for(const group of groups.values()){
+        const a=rectangles[group.from],b=rectangles[group.to],kind=kinds[group.kind];
+        const siblings=pairCounts.get([group.from,group.to].sort().join('|'));
+        let d;
+        if(group.from===group.to){
+          const y=a.y+a.height+7, spread=Math.min(36,a.width/3);
+          d='M '+(a.cx-spread)+' '+y+' C '+(a.cx-70)+' '+(y+95)+' '+(a.cx+70)+' '+(y+95)+' '+(a.cx+spread)+' '+y;
+        }else{
+          const start=anchor(a,b),end=anchor(b,a),dx=end.x-start.x,dy=end.y-start.y,len=Math.max(1,Math.hypot(dx,dy));
+          const order=siblings.indexOf(group.id)-(siblings.length-1)/2;
+          let bend=order*24*(group.from<group.to?1:-1);
+          const pair=[group.from,group.to].sort().join('|');
+          if(pair==='father|narrator')bend+=group.from==='father'?50:-50;
+          if(pair==='daughter|widow')bend+=group.from==='widow'?50:-50;
+          if(group.kind==='derived'&&siblings.length===1)bend+=((group.from.charCodeAt(0)+group.to.charCodeAt(0))%2?1:-1)*24;
+          const nx=-dy/len*bend,ny=dx/len*bend;
+          d='M '+start.x+' '+start.y+' C '+(start.x+dx/3+nx)+' '+(start.y+dy/3+ny)+' '+(start.x+dx*2/3+nx)+' '+(start.y+dy*2/3+ny)+' '+end.x+' '+end.y;
+        }
+        const related=!focused||group.from===focused||group.to===focused;
+        const selected=activeEdge===group.id;
+        const link=element('a',{href:'#family-detail','aria-label':textFor(group),'data-tooltip':textFor(group),class:'cursor-interaction'});
+        const path=element('path',{d,class:'family-link',stroke:kind.color,'stroke-opacity':selected?1:(related?.86:.16)});
+        if(kind.dash)path.setAttribute('stroke-dasharray',kind.dash);
+        if(group.kind==='blood')path.setAttribute('marker-end','url(#family-blood-arrow)');
+        if(group.from===group.to)path.setAttribute('marker-end','url(#family-loop-arrow)');
+        link.append(path,element('path',{d,class:'family-hit'}));
+        link.addEventListener('click',event=>{event.preventDefault();activeEdge=group.id;detail.textContent=textFor(group);draw();save();});
+        links.append(link);
+      }
+      for(const [id,rect] of Object.entries(rectangles)){
+        backgrounds.append(element('rect',{x:rect.x-3,y:rect.y-5,width:rect.width+6,height:rect.height+10,fill:'var(--background)'}));
+        backgrounds.append(element('circle',{cx:rect.cx,cy:rect.y-13,r:focused===id?5:3.5,fill:'var(--foreground)'}));
+      }
+      if(!activeEdge)detail.textContent=focused?names[focused]+' · rolurile celorlalte persoane sunt raportate la aceasta persoana.':'6 persoane · 6 legaturi biologice · 2 casatorii · relatii derivate';
+    }
+    select.addEventListener('change',()=>{focused=select.value;activeEdge='';draw();save();});
+    window.addEventListener('openai:set_globals',event=>{
+      const state=event.detail?.globals?.widgetState;
+      const id=state?.modelContent?.familyPerspective;
+      if(id!==undefined){focused=names[id]?id:'';select.value=focused;activeEdge='';draw();}
+    });
+    const observer=new ResizeObserver(draw);observer.observe(plot);
+    draw();
+  })();
+  </script>
+</div>
+
+</main></body></html>
