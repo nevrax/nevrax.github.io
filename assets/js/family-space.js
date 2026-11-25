@@ -22,5 +22,21 @@
     }
     return {world,project,nodes:Object.fromEntries(Object.entries(world).map(([id,p])=>[id,project(p)]))};
   }
-  globalThis.FamilySpace={scene};
+  function edge(space,from,to,bend=0){
+    const a=space.world[from],b=space.world[to];
+    let p0,p1,p2,p3;
+    if(from===to){
+      p0={x:a.x-8,y:a.y+6,z:a.z};p3={x:a.x+8,y:a.y+6,z:a.z};
+      p1={x:a.x-80,y:a.y+80,z:a.z+35};p2={x:a.x+80,y:a.y+80,z:a.z+35};
+    }else{
+      p0=a;p3=b;
+      p1={x:a.x+(b.x-a.x)/3,y:a.y+(b.y-a.y)/3,z:a.z+(b.z-a.z)/3+bend};
+      p2={x:a.x+(b.x-a.x)*2/3,y:a.y+(b.y-a.y)*2/3,z:a.z+(b.z-a.z)*2/3+bend};
+    }
+    const [s,c1,c2,e]=[p0,p1,p2,p3].map(space.project);
+    const trim=(p,q)=>{const dx=q.x-p.x,dy=q.y-p.y,n=Math.hypot(dx,dy)||1;return{x:p.x+dx/n*7,y:p.y+dy/n*7};};
+    const start=trim(s,c1),end=trim(e,c2);
+    return `M ${start.x} ${start.y} C ${c1.x} ${c1.y} ${c2.x} ${c2.y} ${end.x} ${end.y}`;
+  }
+  globalThis.FamilySpace={scene,edge};
 })();

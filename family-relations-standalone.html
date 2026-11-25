@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Legaturile familiei</title>
-<script src="assets/js/family-space.js?v=volume-6"></script>
+<script src="assets/js/family-space.js?v=mobile-7"></script>
 <style>
 :root{--font-size-base:16px;--background:#fff;--foreground:#20343d;--muted-foreground:#536772;--viz-series-1:#187d75;--viz-series-2:#b96a28;--viz-series-3:#7b56a5;--viz-series-4:#ba4f70;color-scheme:light}
 *{box-sizing:border-box}body{margin:0;padding:24px 16px;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--background);color:var(--foreground)}main{max-width:960px;margin:auto}h2{margin:0;font-size:24px}.form-label{display:grid;gap:6px;max-width:280px}.form-select{padding:8px 10px;font:inherit;color:inherit;background:#fff;border:1px solid #b7c6d2;border-radius:6px;max-width:100%}.text-small{font-size:13px}.cursor-interaction{cursor:pointer}.family-person{font-size:14px}.person-roles{font-size:12px}.edge-detail{padding:8px 0}a:focus-visible{outline:2px solid #187d75;outline-offset:3px}
 @media(max-width:480px){body{padding:16px 12px}.family-person{font-size:13px}.person-roles{font-size:11px}}
 body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important}#family-relations-20261124 .family-controls{padding-right:0} .form-label{display:flex;align-items:center;gap:8px;max-width:none}.form-select{flex:1;min-width:0;padding:6px 8px}.rotation-controls{flex-wrap:nowrap!important;gap:6px!important}.rotation-controls button{font:inherit;border:1px solid #cbd7d3;border-radius:6px;background:white;min-height:32px;padding:3px 8px}.rotation-controls label{font-size:13px;min-width:0!important;white-space:nowrap}.rotation-controls input{display:none}.rotation-controls #original-mode,.rotation-controls #original-left,.rotation-controls #original-right{display:none}.rotation-hint{font-size:12px!important;color:#536772}.family-legend{font-size:11px;gap:3px 10px!important}.edge-detail{font-size:12px;max-height:54px;overflow:auto}#family-relations-20261124 .legend-item svg{width:20px}.family-plot{overscroll-behavior:contain}
 </style>
-</head><body><main>
+<style>body{padding:8px 10px}h2{font-size:17px}#family-relations-20261124{gap:5px!important}#family-relations-20261124 .person-roles{display:none!important}#family-relations-20261124 .family-person{font-size:12px;line-height:1.2;background:transparent;white-space:nowrap}#family-relations-20261124 .person-name{background:transparent;font-weight:600}.form-label{font-size:12px}.form-select{font-size:14px;padding:5px 8px}.rotation-controls button{font-size:11px;min-height:26px}.rotation-controls label{font-size:11px}.family-legend{font-size:10px}.rotation-hint{font-size:10px!important;white-space:nowrap}.edge-detail{font-size:11px;padding:3px 0;min-height:20px!important;max-height:none;overflow:visible}.family-plot{overscroll-behavior:auto}#family-relations-20261124 .legend-item svg{width:16px}</style></head><body><main>
 <div id="family-relations-20261124">
   <style>
     #family-relations-20261124 { display: grid; gap: calc(var(--font-size-base) * .75); }
@@ -54,7 +54,7 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
     <button type="button" id="original-right" aria-label="Rotește la dreapta">+15°</button>
     <button type="button" id="original-reset">Vedere inițială</button>
   </div>
-  <p class="text-small rotation-hint" style="margin:0"><strong>Rotește graful:</strong> glisează cu degetul sau trage cu mouse-ul, stânga–dreapta. Atinge o linie pentru explicație.</p>
+  <p class="text-small rotation-hint" style="margin:0">Orizontal: rotire · Vertical: derularea paginii</p>
   <div class="family-legend text-small" aria-label="Tipuri de legaturi">
     <span class="legend-item"><svg aria-hidden="true"><line x1="0" y1="6" x2="25" y2="6" stroke="var(--viz-series-1)" stroke-width="2"/></svg>Parinte biologic → copil</span>
     <span class="legend-item"><svg aria-hidden="true"><line x1="0" y1="6" x2="25" y2="6" stroke="var(--viz-series-2)" stroke-width="2" stroke-dasharray="6 4"/></svg>Casatorie</span>
@@ -134,7 +134,7 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
     let rotation = 0, use3d = true, gesture = null, dragged = false;
     const angleControl = root.querySelector('#original-angle');
     const modeControl = root.querySelector('#original-mode');
-    plot.style.touchAction = 'none';
+    plot.style.touchAction = 'pan-y';
     plot.style.userSelect = 'none';
     plot.style.webkitUserSelect = 'none';
     plot.style.cursor = 'grab';
@@ -188,26 +188,26 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
     let touchGesture = null;
     plot.addEventListener('touchstart', event => {
       if (!use3d || event.touches.length !== 1) return;
-      event.preventDefault();
       const touch=event.touches[0];
-      touchGesture={x:touch.clientX,angle:rotation,moved:false,link:event.target.closest('a')};
+      touchGesture={x:touch.clientX,y:touch.clientY,angle:rotation,moved:false};
       dragged=false;
     }, {passive:false});
     plot.addEventListener('touchmove', event => {
       if (!touchGesture || event.touches.length !== 1) return;
-      event.preventDefault();
       const dx=event.touches[0].clientX-touchGesture.x;
-      if (Math.abs(dx)>3) touchGesture.moved=true;
-      if (touchGesture.moved) { dragged=true; rotate(touchGesture.angle+dx*.65); }
+      const dy=event.touches[0].clientY-touchGesture.y;
+      if(!touchGesture.moved){
+        if(Math.max(Math.abs(dx),Math.abs(dy))<6)return;
+        if(Math.abs(dy)>=Math.abs(dx)){touchGesture=null;return;}
+        touchGesture.moved=true;
+      }
+      if(event.cancelable)event.preventDefault();
+      dragged=true; rotate(touchGesture.angle+dx*.65);
     }, {passive:false});
     plot.addEventListener('touchend', event => {
       if (!touchGesture) return;
-      event.preventDefault();
       const finished=touchGesture; touchGesture=null;
-      if (!finished.moved && finished.link) {
-        dragged=false;
-        finished.link.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
-      }
+      if(finished.moved&&event.cancelable)event.preventDefault();
       setTimeout(() => { dragged=false; },0);
     }, {passive:false});
     plot.addEventListener('touchcancel', () => { touchGesture=null; dragged=false; });
@@ -240,19 +240,20 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
       rotationOnly = rotationOnly === true && measuredNodes.size === persons.size;
       const width = Math.max(300,plot.clientWidth);
       const narrow = width < 480;
-      const height = Math.max(340, Math.min(610, window.innerHeight - 225));
+      const height = Math.max(300, Math.min(540, window.innerHeight - 175));
       const space=FamilySpace.scene(width,height,rotation,use3d);
       const centers=Object.fromEntries(Object.entries(space.nodes).map(([id,p])=>[id,[p.x,p.y]]));
       plot.style.height=height+'px';
       svg.setAttribute('viewBox','0 0 '+width+' '+height);
-      const nodeWidth=narrow?116:Math.min(154,width*.24);
+      const shortNames={father:'Tatăl',daughter:'Fiica văduvei',narrator:'Povestitorul',widow:'Văduva',boy1:'Primul băiat',boy2:'Al doilea băiat'};
       for (const [id,el] of persons) {
         el.style.left='0';el.style.top='0';
         const point=space.nodes[id];
         el.style.transform='translate3d('+point.x+'px,'+point.y+'px,0) translate(-50%,-50%) scale('+point.scale+')';
         el.style.zIndex=String(Math.round(1000-point.z));
         if (rotationOnly) continue;
-        el.style.width=nodeWidth+'px';
+        el.style.width='max-content';
+        el.querySelector('.person-name').textContent=shortNames[id];
         const roles=[];
         if(focused) for(const fact of facts) {
           if(fact.from===fact.to&&fact.from===focused&&id===focused)roles.push(fact.role);
@@ -267,7 +268,7 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
         if (!rotationOnly) {
           measuredNodes.set(id,{width:el.offsetWidth,height:el.offsetHeight});
         }
-        const size=measuredNodes.get(id),scale=space.nodes[id].scale,r={width:size.width*scale,height:size.height*scale},cx=centers[id][0],cy=centers[id][1];
+        const size=measuredNodes.get(id),scale=space.nodes[id].scale,r={width:size.width*scale,height:size.height*scale},cx=centers[id][0],cy=centers[id][1]+15;
         rectangles[id]={x:cx-r.width/2,y:cy-r.height/2,width:r.width,height:r.height,cx,cy};
       }
       // Separate labels in screen space; their spatial points remain unchanged.
@@ -297,26 +298,18 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
         if(!pairCounts.has(pair))pairCounts.set(pair,[]);pairCounts.get(pair).push(group.id);
       }
       for(const group of groups.values()){
-        const a=rectangles[group.from],b=rectangles[group.to],kind=kinds[group.kind];
+        const kind=kinds[group.kind];
         const siblings=pairCounts.get([group.from,group.to].sort().join('|'));
-        let d;
-        if(group.from===group.to){
-          const y=a.y+a.height+7, spread=Math.min(36,a.width/3);
-          d='M '+(a.cx-spread)+' '+y+' C '+(a.cx-70)+' '+(y+95)+' '+(a.cx+70)+' '+(y+95)+' '+(a.cx+spread)+' '+y;
-        }else{
-          const start=anchor(a,b),end=anchor(b,a),dx=end.x-start.x,dy=end.y-start.y,len=Math.max(1,Math.hypot(dx,dy));
+        let bend=0;
+        if(group.from!==group.to){
           const order=siblings.indexOf(group.id)-(siblings.length-1)/2;
-          let bend=order*24*(group.from<group.to?1:-1);
+          bend=order*24*(group.from<group.to?1:-1);
           const pair=[group.from,group.to].sort().join('|');
           if(pair==='father|narrator')bend+=group.from==='father'?50:-50;
           if(pair==='daughter|widow')bend+=group.from==='widow'?50:-50;
           if(group.kind==='derived'&&siblings.length===1)bend+=((group.from.charCodeAt(0)+group.to.charCodeAt(0))%2?1:-1)*24;
-          const nx=-dy/len*bend,ny=dx/len*bend;
-          const wa=space.world[group.from],wb=space.world[group.to];
-          const control=space.project({x:(wa.x+wb.x)/2,y:(wa.y+wb.y)/2,z:(wa.z+wb.z)/2+bend});
-          const mx=control.x-(a.cx+b.cx)/2,my=control.y-(a.cy+b.cy)/2;
-          d='M '+start.x+' '+start.y+' C '+(start.x+dx/3+nx+mx)+' '+(start.y+dy/3+ny+my)+' '+(start.x+dx*2/3+nx+mx)+' '+(start.y+dy*2/3+ny+my)+' '+end.x+' '+end.y;
         }
+        const d=FamilySpace.edge(space,group.from,group.to,bend);
         const related=!focused||group.from===focused||group.to===focused;
         const selected=activeEdge===group.id;
         const existing=renderedLinks.get(group.id);
@@ -339,13 +332,12 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
       }
       for(const [id,rect] of Object.entries(rectangles)){
         let nodes=renderedNodes.get(id);
-        if(!nodes){nodes={leader:element('path',{fill:'none',stroke:'#aebfba','stroke-width':1}),box:element('rect',{fill:'var(--background)'}),dot:element('circle',{fill:'var(--foreground)'})};backgrounds.append(nodes.leader,nodes.box,nodes.dot);renderedNodes.set(id,nodes);}
-        for(const [key,value] of Object.entries({x:rect.x-3,y:rect.y-5,width:rect.width+6,height:rect.height+10}))nodes.box.setAttribute(key,value);
-        const point=space.nodes[id],dotY=point.y-rect.height/2-13;
-        nodes.leader.setAttribute('d',Math.abs(rect.cy-point.y)>2?'M '+point.x+' '+dotY+' L '+rect.cx+' '+(rect.y-3):'');
-        for(const [key,value] of Object.entries({cx:point.x,cy:dotY,r:(focused===id?5:3.5)*point.scale}))nodes.dot.setAttribute(key,value);
+        if(!nodes){nodes={leader:element('path',{fill:'none',stroke:'#aebfba','stroke-width':1}),dot:element('circle',{fill:'var(--foreground)'})};backgrounds.append(nodes.leader,nodes.dot);renderedNodes.set(id,nodes);}
+        const point=space.nodes[id];
+        nodes.leader.setAttribute('d',Math.abs(rect.cy-point.y-15)>3?'M '+point.x+' '+point.y+' L '+rect.cx+' '+rect.y:'');
+        for(const [key,value] of Object.entries({cx:point.x,cy:point.y,r:(focused===id?4:3)*point.scale}))nodes.dot.setAttribute(key,value);
       }
-      if(!activeEdge)detail.textContent=focused?names[focused]+' · rolurile celorlalte persoane sunt raportate la aceasta persoana.':'6 persoane · 6 legaturi biologice · 2 casatorii · relatii derivate';
+      if(!activeEdge)detail.textContent=focused?'Perspectivă: '+names[focused]+'. Atinge o linie.':'Atinge o linie pentru explicație.';
     }
     select.addEventListener('change',()=>{focused=select.value;activeEdge='';draw();save();});
     window.addEventListener('openai:set_globals',event=>{
