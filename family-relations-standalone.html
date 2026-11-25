@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Legaturile familiei</title>
+<script src="assets/js/family-space.js?v=volume-6"></script>
 <style>
 :root{--font-size-base:16px;--background:#fff;--foreground:#20343d;--muted-foreground:#536772;--viz-series-1:#187d75;--viz-series-2:#b96a28;--viz-series-3:#7b56a5;--viz-series-4:#ba4f70;color-scheme:light}
 *{box-sizing:border-box}body{margin:0;padding:24px 16px;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--background);color:var(--foreground)}main{max-width:960px;margin:auto}h2{margin:0;font-size:24px}.form-label{display:grid;gap:6px;max-width:280px}.form-select{padding:8px 10px;font:inherit;color:inherit;background:#fff;border:1px solid #b7c6d2;border-radius:6px;max-width:100%}.text-small{font-size:13px}.cursor-interaction{cursor:pointer}.family-person{font-size:14px}.person-roles{font-size:12px}.edge-detail{padding:8px 0}a:focus-visible{outline:2px solid #187d75;outline-offset:3px}
@@ -53,7 +54,7 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
     <button type="button" id="original-right" aria-label="Rotește la dreapta">+15°</button>
     <button type="button" id="original-reset">Vedere inițială</button>
   </div>
-  <p class="text-small rotation-hint" style="margin:0">Glisează orizontal pentru rotire continuă. Atinge o linie pentru explicație.</p>
+  <p class="text-small rotation-hint" style="margin:0"><strong>Rotește graful:</strong> glisează cu degetul sau trage cu mouse-ul, stânga–dreapta. Atinge o linie pentru explicație.</p>
   <div class="family-legend text-small" aria-label="Tipuri de legaturi">
     <span class="legend-item"><svg aria-hidden="true"><line x1="0" y1="6" x2="25" y2="6" stroke="var(--viz-series-1)" stroke-width="2"/></svg>Parinte biologic → copil</span>
     <span class="legend-item"><svg aria-hidden="true"><line x1="0" y1="6" x2="25" y2="6" stroke="var(--viz-series-2)" stroke-width="2" stroke-dasharray="6 4"/></svg>Casatorie</span>
@@ -240,27 +241,16 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
       const width = Math.max(300,plot.clientWidth);
       const narrow = width < 480;
       const height = Math.max(340, Math.min(610, window.innerHeight - 225));
-      const outer = narrow ? 66 : width*.18;
-      const right = width-outer, middle=width/2;
-      const upper = height*.29, lower=height*.65;
-      const centers={boy1:[middle,42],father:[outer,upper],daughter:[right,upper],narrator:[outer,lower],widow:[right,lower],boy2:[middle,height-35]};
-      if (use3d && rotation !== 0) {
-        const radians = rotation * Math.PI / 180;
-        const depth = {father:-width*.18,daughter:-width*.18,boy1:-width*.28,narrator:width*.18,widow:width*.18,boy2:width*.28};
-        for (const [id,center] of Object.entries(centers)) {
-          const x = center[0]-middle;
-          center[0] = middle + x*Math.cos(radians) + depth[id]*Math.sin(radians);
-        }
-        const reach=Math.max(...Object.values(centers).map(center=>Math.abs(center[0]-middle)));
-        const fit=Math.min(1,(middle-(narrow?62:84))/Math.max(1,reach));
-        for(const center of Object.values(centers)) center[0]=middle+(center[0]-middle)*fit;
-      }
+      const space=FamilySpace.scene(width,height,rotation,use3d);
+      const centers=Object.fromEntries(Object.entries(space.nodes).map(([id,p])=>[id,[p.x,p.y]]));
       plot.style.height=height+'px';
       svg.setAttribute('viewBox','0 0 '+width+' '+height);
       const nodeWidth=narrow?116:Math.min(154,width*.24);
       for (const [id,el] of persons) {
         el.style.left='0';el.style.top='0';
-        el.style.transform='translate3d('+centers[id][0]+'px,'+centers[id][1]+'px,0) translate(-50%,-50%)';
+        const point=space.nodes[id];
+        el.style.transform='translate3d('+point.x+'px,'+point.y+'px,0) translate(-50%,-50%) scale('+point.scale+')';
+        el.style.zIndex=String(Math.round(1000-point.z));
         if (rotationOnly) continue;
         el.style.width=nodeWidth+'px';
         const roles=[];
@@ -275,9 +265,9 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
       const rectangles={};
       for(const [id,el] of persons){
         if (!rotationOnly) {
-          const r=el.getBoundingClientRect(); measuredNodes.set(id,{width:r.width,height:r.height});
+          measuredNodes.set(id,{width:el.offsetWidth,height:el.offsetHeight});
         }
-        const r=measuredNodes.get(id),cx=centers[id][0],cy=centers[id][1];
+        const size=measuredNodes.get(id),scale=space.nodes[id].scale,r={width:size.width*scale,height:size.height*scale},cx=centers[id][0],cy=centers[id][1];
         rectangles[id]={x:cx-r.width/2,y:cy-r.height/2,width:r.width,height:r.height,cx,cy};
       }
       const pairCounts=new Map();
@@ -301,7 +291,10 @@ body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important
           if(pair==='daughter|widow')bend+=group.from==='widow'?50:-50;
           if(group.kind==='derived'&&siblings.length===1)bend+=((group.from.charCodeAt(0)+group.to.charCodeAt(0))%2?1:-1)*24;
           const nx=-dy/len*bend,ny=dx/len*bend;
-          d='M '+start.x+' '+start.y+' C '+(start.x+dx/3+nx)+' '+(start.y+dy/3+ny)+' '+(start.x+dx*2/3+nx)+' '+(start.y+dy*2/3+ny)+' '+end.x+' '+end.y;
+          const wa=space.world[group.from],wb=space.world[group.to];
+          const control=space.project({x:(wa.x+wb.x)/2,y:(wa.y+wb.y)/2,z:(wa.z+wb.z)/2+bend});
+          const mx=control.x-(a.cx+b.cx)/2,my=control.y-(a.cy+b.cy)/2;
+          d='M '+start.x+' '+start.y+' C '+(start.x+dx/3+nx+mx)+' '+(start.y+dy/3+ny+my)+' '+(start.x+dx*2/3+nx+mx)+' '+(start.y+dy*2/3+ny+my)+' '+end.x+' '+end.y;
         }
         const related=!focused||group.from===focused||group.to===focused;
         const selected=activeEdge===group.id;
