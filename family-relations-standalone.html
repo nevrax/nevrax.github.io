@@ -8,6 +8,7 @@
 :root{--font-size-base:16px;--background:#fff;--foreground:#20343d;--muted-foreground:#536772;--viz-series-1:#187d75;--viz-series-2:#b96a28;--viz-series-3:#7b56a5;--viz-series-4:#ba4f70;color-scheme:light}
 *{box-sizing:border-box}body{margin:0;padding:24px 16px;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--background);color:var(--foreground)}main{max-width:960px;margin:auto}h2{margin:0;font-size:24px}.form-label{display:grid;gap:6px;max-width:280px}.form-select{padding:8px 10px;font:inherit;color:inherit;background:#fff;border:1px solid #b7c6d2;border-radius:6px;max-width:100%}.text-small{font-size:13px}.cursor-interaction{cursor:pointer}.family-person{font-size:14px}.person-roles{font-size:12px}.edge-detail{padding:8px 0}a:focus-visible{outline:2px solid #187d75;outline-offset:3px}
 @media(max-width:480px){body{padding:16px 12px}.family-person{font-size:13px}.person-roles{font-size:11px}}
+body{padding:12px}h2{font-size:20px}#family-relations-20261124{gap:8px!important}#family-relations-20261124 .family-controls{padding-right:0} .form-label{display:flex;align-items:center;gap:8px;max-width:none}.form-select{flex:1;min-width:0;padding:6px 8px}.rotation-controls{flex-wrap:nowrap!important;gap:6px!important}.rotation-controls button{font:inherit;border:1px solid #cbd7d3;border-radius:6px;background:white;min-height:32px;padding:3px 8px}.rotation-controls label{font-size:13px;min-width:0!important;white-space:nowrap}.rotation-controls input{display:none}.rotation-controls #original-mode,.rotation-controls #original-left,.rotation-controls #original-right{display:none}.rotation-hint{font-size:12px!important;color:#536772}.family-legend{font-size:11px;gap:3px 10px!important}.edge-detail{font-size:12px;max-height:54px;overflow:auto}#family-relations-20261124 .legend-item svg{width:20px}.family-plot{overscroll-behavior:contain}
 </style>
 </head><body><main>
 <div id="family-relations-20261124">
@@ -52,7 +53,7 @@
     <button type="button" id="original-right" aria-label="Rotește la dreapta">+15°</button>
     <button type="button" id="original-reset">Vedere inițială</button>
   </div>
-  <p class="text-small" style="margin:0">Trage orizontal pe grafic pentru rotire în jurul axei verticale. Poziția verticală rămâne fixă; numele rămân orientate spre tine. Selectează în continuare legăturile pentru explicații.</p>
+  <p class="text-small rotation-hint" style="margin:0">Glisează orizontal pentru rotire continuă. Atinge o linie pentru explicație.</p>
   <div class="family-legend text-small" aria-label="Tipuri de legaturi">
     <span class="legend-item"><svg aria-hidden="true"><line x1="0" y1="6" x2="25" y2="6" stroke="var(--viz-series-1)" stroke-width="2"/></svg>Parinte biologic → copil</span>
     <span class="legend-item"><svg aria-hidden="true"><line x1="0" y1="6" x2="25" y2="6" stroke="var(--viz-series-2)" stroke-width="2" stroke-dasharray="6 4"/></svg>Casatorie</span>
@@ -137,7 +138,9 @@
     plot.style.webkitUserSelect = 'none';
     plot.style.cursor = 'grab';
     function rotate(value) {
-      rotation = Math.round(((value + 540) % 360) - 180);
+      rotation = Math.round(value);
+      angleControl.min = Math.min(-360, rotation - 360);
+      angleControl.max = Math.max(360, rotation + 360);
       angleControl.value = rotation;
       root.querySelector('#original-degrees').textContent = rotation + '°';
       draw();
@@ -230,11 +233,11 @@
     function draw() {
       const width = Math.max(300,plot.clientWidth);
       const narrow = width < 480;
-      const height = narrow ? 700 : 610;
+      const height = Math.max(340, Math.min(610, window.innerHeight - 225));
       const outer = narrow ? 66 : width*.18;
       const right = width-outer, middle=width/2;
-      const upper = narrow ? 210 : 185, lower=narrow ? 465 : 405;
-      const centers={boy1:[middle,52],father:[outer,upper],daughter:[right,upper],narrator:[outer,lower],widow:[right,lower],boy2:[middle,height-60]};
+      const upper = height*.29, lower=height*.65;
+      const centers={boy1:[middle,42],father:[outer,upper],daughter:[right,upper],narrator:[outer,lower],widow:[right,lower],boy2:[middle,height-35]};
       if (use3d && rotation !== 0) {
         const radians = rotation * Math.PI / 180;
         const depth = {father:-width*.18,daughter:-width*.18,boy1:-width*.28,narrator:width*.18,widow:width*.18,boy2:width*.28};
@@ -242,6 +245,9 @@
           const x = center[0]-middle;
           center[0] = middle + x*Math.cos(radians) + depth[id]*Math.sin(radians);
         }
+        const reach=Math.max(...Object.values(centers).map(center=>Math.abs(center[0]-middle)));
+        const fit=Math.min(1,(middle-(narrow?62:84))/Math.max(1,reach));
+        for(const center of Object.values(centers)) center[0]=middle+(center[0]-middle)*fit;
       }
       plot.style.height=height+'px';
       svg.setAttribute('viewBox','0 0 '+width+' '+height);
@@ -309,6 +315,7 @@
       if(id!==undefined){focused=names[id]?id:'';select.value=focused;activeEdge='';draw();}
     });
     const observer=new ResizeObserver(draw);observer.observe(plot);
+    window.addEventListener('resize',draw);
     draw();
   })();
   </script>
