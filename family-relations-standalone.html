@@ -45,6 +45,14 @@
       </select>
     </label>
   </div>
+  <div class="rotation-controls" style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">
+    <button type="button" id="original-mode" aria-pressed="true">3D activ</button>
+    <button type="button" id="original-left" aria-label="Rotește la stânga">−15°</button>
+    <label style="display:flex;align-items:center;gap:8px;flex:1;min-width:160px">Rotire Y <input id="original-angle" type="range" min="-180" max="180" value="0" style="width:100%;min-width:60px;accent-color:#187d75"><output id="original-degrees" style="min-width:42px">0°</output></label>
+    <button type="button" id="original-right" aria-label="Rotește la dreapta">+15°</button>
+    <button type="button" id="original-reset">Vedere inițială</button>
+  </div>
+  <p class="text-small" style="margin:0">Trage orizontal pe grafic pentru rotire în jurul axei verticale. Poziția verticală rămâne fixă; numele rămân orientate spre tine. Selectează în continuare legăturile pentru explicații.</p>
   <div class="family-legend text-small" aria-label="Tipuri de legaturi">
     <span class="legend-item"><svg aria-hidden="true"><line x1="0" y1="6" x2="25" y2="6" stroke="var(--viz-series-1)" stroke-width="2"/></svg>Parinte biologic → copil</span>
     <span class="legend-item"><svg aria-hidden="true"><line x1="0" y1="6" x2="25" y2="6" stroke="var(--viz-series-2)" stroke-width="2" stroke-dasharray="6 4"/></svg>Casatorie</span>
@@ -121,6 +129,47 @@
     });
     const persons = new Map([...root.querySelectorAll('[data-person]')].map(el => [el.dataset.person,el]));
     let focused = 'narrator', activeEdge = '';
+    let rotation = 0, use3d = true, gesture = null, dragged = false;
+    const angleControl = root.querySelector('#original-angle');
+    const modeControl = root.querySelector('#original-mode');
+    plot.style.touchAction = 'pan-y';
+    plot.style.cursor = 'grab';
+    function rotate(value) {
+      rotation = Math.round(((value + 540) % 360) - 180);
+      angleControl.value = rotation;
+      root.querySelector('#original-degrees').textContent = rotation + '°';
+      draw();
+    }
+    angleControl.addEventListener('input', () => rotate(Number(angleControl.value)));
+    root.querySelector('#original-left').addEventListener('click', () => rotate(rotation - 15));
+    root.querySelector('#original-right').addEventListener('click', () => rotate(rotation + 15));
+    root.querySelector('#original-reset').addEventListener('click', () => rotate(0));
+    modeControl.addEventListener('click', () => {
+      use3d = !use3d;
+      modeControl.textContent = use3d ? '3D activ' : '2D activ';
+      modeControl.setAttribute('aria-pressed', String(use3d));
+      angleControl.disabled = !use3d;
+      root.querySelector('#original-left').disabled = !use3d;
+      root.querySelector('#original-right').disabled = !use3d;
+      draw();
+    });
+    plot.addEventListener('pointerdown', event => {
+      if (!use3d || event.button !== 0) return;
+      gesture = {x:event.clientX, y:event.clientY, angle:rotation}; dragged = false;
+    });
+    plot.addEventListener('pointermove', event => {
+      if (!gesture) return;
+      const dx = event.clientX - gesture.x;
+      if (!dragged && Math.abs(dx) < 6) return;
+      if (!dragged && Math.abs(event.clientY-gesture.y) > Math.abs(dx)) { gesture=null; return; }
+      dragged = true;
+      plot.setPointerCapture(event.pointerId);
+      rotate(gesture.angle + dx * .55);
+    });
+    function endRotation() { gesture=null; setTimeout(() => { dragged=false; }, 0); }
+    plot.addEventListener('pointerup', endRotation);
+    plot.addEventListener('pointercancel', endRotation);
+    plot.addEventListener('click', event => { if (dragged) { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
     const saved = window.openai?.widgetState;
     const restored=saved?.modelContent?.familyPerspective;
     if (restored==='' || names[restored]) focused=restored;
@@ -154,6 +203,14 @@
       const right = width-outer, middle=width/2;
       const upper = narrow ? 210 : 185, lower=narrow ? 465 : 405;
       const centers={boy1:[middle,52],father:[outer,upper],daughter:[right,upper],narrator:[outer,lower],widow:[right,lower],boy2:[middle,height-60]};
+      if (use3d && rotation !== 0) {
+        const radians = rotation * Math.PI / 180;
+        const depth = {father:-width*.18,daughter:-width*.18,boy1:-width*.28,narrator:width*.18,widow:width*.18,boy2:width*.28};
+        for (const [id,center] of Object.entries(centers)) {
+          const x = center[0]-middle;
+          center[0] = middle + x*Math.cos(radians) + depth[id]*Math.sin(radians);
+        }
+      }
       plot.style.height=height+'px';
       svg.setAttribute('viewBox','0 0 '+width+' '+height);
       const nodeWidth=narrow?116:Math.min(154,width*.24);
